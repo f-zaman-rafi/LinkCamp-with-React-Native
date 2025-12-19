@@ -1,13 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
-import '../global.css';
 
-const Home = () => {
+const AdministationFeed = () => {
   return (
     <View className="flex-1 items-center justify-center bg-stone-800">
-      <Text className="text-blue-500">Welcome to LinkCamp!</Text>
+      <Text className="text-blue-500">Administration Feed!</Text>
     </View>
   );
 };
 
-export default Home;
+export default AdministationFeed;

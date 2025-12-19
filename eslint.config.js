@@ -1,15 +1,17 @@
 /* eslint-env node */
-const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
-module.exports = defineConfig([
-  expoConfig,
+module.exports = [
+  ...expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', '.expo/*', 'node_modules/*'],
   },
   {
     rules: {
       'react/display-name': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'react-hooks/exhaustive-deps': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
-]);
+];
