@@ -29,56 +29,113 @@ type SignUpFormData = {
 
 const SignUpPage = () => {
   const router = useRouter();
-  const { signUp } = useAuth();
-  const axiosCommon = useAxiosCommon();
+  const { signUp } = useAuth(); // Hook to handle Firebase authentication
+  const axiosCommon = useAxiosCommon(); // Custom hook for Axios requests
 
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state for UI
+  const [showPassword, setShowPassword] = useState(false); // Toggle for password visibility
 
+  // Hook form setup for managing form data
   const {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SignUpFormData>({
     defaultValues: {
       email: '',
       password: '',
       userType: 'student',
+      Id: '',
+      department: '',
+      session: '',
     },
   });
 
-  const selectedUserType = watch('userType');
+  const selectedUserType = watch('userType'); // Watch selected user type (student/teacher/admin)
+
+  // Clear additional fields when user type is changed
+  React.useEffect(() => {
+    setValue('Id', ''); // Clear ID field
+    setValue('department', ''); // Clear department field
+    setValue('session', ''); // Clear session field
+  }, [selectedUserType, setValue]);
 
   /* ---------- Submit Logic ---------- */
-  // const onSubmit = async (data: SignUpFormData) => {
-  //   setLoading(true);
-  //   try {
-  //     await signUp(data.email, data.password);
-  //     const userInfo = {
-  //       email: data.email,
-  //       user_id: data.Id ?? '',
-  //       userType: data.userType,
-  //       department: data.department ?? '',
-  //       session: data.session ?? '',
-  //       verify: 'pending',
-  //       name: '',
-  //     };
-  //     await axiosCommon.post('/users', userInfo);
-  //     Alert.alert('Success', 'Account created! Pending approval.', [
-  //       { text: 'OK', onPress: () => router.replace('/pending-request') },
-  //     ]);
-  //   } catch (error: any) {
-  //     Alert.alert('Signup failed', error.message || 'Check your connection.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const onSubmit = async (data: SignUpFormData) => {
+    setLoading(true); // Set loading state to true while signing up
 
-  const onSubmit = (data) => {
-    console.log('Form Data:', data);
+    try {
+      // 1. Sign up the user with Firebase
+      const userCredential = await signUp(data.email, data.password);
+      const user = userCredential.user; // Get user info after successful sign up
+
+      // 2. Get Firebase ID Token after signing up
+      const idToken = await user.getIdToken(); // Fetch the Firebase ID token for authentication
+      console.log('Firebase ID Token:', idToken); // Log the token for debugging
+
+      // 3. Prepare user data for MongoDB
+      const userInfo = {
+        email: data.email,
+        user_id: data.Id || '', // If no ID provided, use an empty string
+        userType: data.userType,
+        department: data.department || '', // Default empty if no department
+        session: data.session || '', // Default empty if no session
+        verify: 'pending', // Set default verification status
+        name: '', // Empty string for name until it is set later
+      };
+
+      // 4. Send the Firebase ID token and user data to backend
+      const response = await axiosCommon.post('/users', userInfo, {
+        headers: {
+          Authorization: `Bearer ${idToken}`, // Pass Firebase ID token in the header for auth
+        },
+      });
+
+      console.log('Backend response:', response); // Log the backend response
+
+      // 5. Show success alert and navigate to pending request page
+      Alert.alert(
+        'Success',
+        "You're all set! Just hang tight—your account will be approved shortly.",
+        [{ text: 'OK', onPress: () => router.replace('/pending-request') }] // Redirect to pending page
+      );
+    } catch (error: any) {
+      console.error('Signup error:', error); // Log the error for debugging
+
+      // Determine a user-friendly error message
+      let errorMessage = 'An unexpected error occurred. Please try again later.';
+
+      // Handle Firebase-specific errors
+      if (error.code) {
+        const firebaseErrorMessages: Record<string, string> = {
+          'auth/email-already-in-use': 'This email is already registered.',
+          'auth/invalid-email': 'The email address is not valid.',
+          'auth/weak-password': 'Password is too weak. It should contain at least 6 characters.',
+          'auth/network-request-failed': 'Network error. Check your connection and try again.',
+        };
+
+        // Set the corresponding error message
+        errorMessage = firebaseErrorMessages[error.code] || error.message;
+      } else if (error.response) {
+        // Handle errors from backend response
+        errorMessage = error.response.data.message || 'Backend error occurred. Please try again.';
+      }
+
+      // Show the error message in a nice UI-friendly alert
+      Alert.alert('Signup Error', errorMessage); // Display error in a user-friendly format
+    } finally {
+      setLoading(false); // Set loading state to false once the process is done
+    }
   };
+
+  const onError = (errorList: any) => {
+    console.error('Form errors:', errorList); // Log form errors for debugging
+  };
+
   /* ---------- Dropdown Data ---------- */
+  // List of departments to select from
   const departments = [
     'Computer Science',
     'Electrical Engineering',
@@ -92,31 +149,36 @@ const SignUpPage = () => {
     'Pharmacy',
   ].map((item) => ({ label: item, value: item }));
 
+  // Generate sessions from 2003 to 2025
   const sessions = Array.from({ length: 2025 - 2003 + 1 }, (_, i) => {
     const year = 2025 - i;
     return { label: `${year}-${year + 1}`, value: `${year}-${year + 1}` };
   });
 
   return (
-    <View className="flex-1 justify-center px-6">
-      <View className="mt-22">
+    <View className="flex-1 bg-white px-6">
+      <View className="mt-20 mb-4">
         <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
         <Text className="mt-2 text-lg text-slate-500">University Campus Platform</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
-        className="mt-6">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         {/* Email */}
         <View className="mb-4">
           <Text className="mb-2 font-semibold">Email</Text>
           <Controller
             control={control}
             name="email"
-            rules={{ required: 'Email is required' }}
+            rules={{
+              required: 'Email is required',
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: 'Enter a valid email address',
+              },
+            }}
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className="h-14 rounded-xl border border-slate-300 px-4"
+                className={`h-14 rounded-xl border px-4 ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
                 value={value}
                 onChangeText={onChange}
                 placeholder="student@university.edu"
@@ -124,6 +186,9 @@ const SignUpPage = () => {
               />
             )}
           />
+          {errors.email && (
+            <Text className="mt-1 text-xs text-red-500">{errors.email.message}</Text>
+          )}
         </View>
 
         {/* Password */}
@@ -133,9 +198,17 @@ const SignUpPage = () => {
             <Controller
               control={control}
               name="password"
+              rules={{
+                required: 'Password is required',
+                minLength: { value: 6, message: 'Minimum 6 characters' },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                  message: 'Needs Uppercase, Lowercase, Number, and Special Char',
+                },
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className="h-14 rounded-xl border border-slate-300 px-4 pr-12"
+                  className={`h-14 rounded-xl border px-4 pr-12 ${errors.password ? 'border-red-500' : 'border-slate-300'}`}
                   value={value}
                   onChangeText={onChange}
                   placeholder="••••••"
@@ -149,9 +222,12 @@ const SignUpPage = () => {
               <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={22} color="#64748b" />
             </TouchableOpacity>
           </View>
+          {errors.password && (
+            <Text className="mt-1 text-xs text-red-500">{errors.password.message}</Text>
+          )}
         </View>
 
-        {/* User Type Selector */}
+        {/* User Type */}
         <View className="mb-6">
           <Text className="mb-2 font-semibold">User Type</Text>
           <Controller
@@ -175,7 +251,7 @@ const SignUpPage = () => {
           />
         </View>
 
-        {/* Conditional Fields: ID, Department, Session */}
+        {/* Conditional Fields */}
         {(selectedUserType === 'student' || selectedUserType === 'teacher') && (
           <View>
             <Text className="mb-2 font-semibold">
@@ -184,31 +260,45 @@ const SignUpPage = () => {
             <Controller
               control={control}
               name="Id"
-              rules={{ required: 'ID is required' }}
+              rules={{
+                required: 'ID is required',
+                pattern: {
+                  value: /^[0-9]*$/,
+                  message: 'ID must be a number',
+                },
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className="mb-4 h-14 rounded-xl border border-slate-300 px-4"
+                  className={`mb-4 h-14 rounded-xl border px-4 ${errors.Id ? 'border-red-500' : 'border-slate-300'}`}
                   value={value}
                   onChangeText={onChange}
                   placeholder="ID Number"
+                  keyboardType="numeric"
                 />
               )}
             />
+            {errors.Id && (
+              <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.Id.message}</Text>
+            )}
 
             <Text className="mb-2 font-semibold">Department</Text>
             <Controller
               control={control}
               name="department"
+              rules={{ required: 'Required' }}
               render={({ field: { onChange, value } }) => (
                 <Dropdown
-                  style={{
-                    height: 56,
-                    borderColor: '#cbd5e1',
-                    borderWidth: 1,
-                    borderRadius: 12,
-                    paddingHorizontal: 16,
-                    marginBottom: 16,
-                  }}
+                  style={[
+                    {
+                      height: 56,
+                      borderColor: '#cbd5e1',
+                      borderWidth: 1,
+                      borderRadius: 12,
+                      paddingHorizontal: 16,
+                      marginBottom: 16,
+                    },
+                    errors.department && { borderColor: 'red' },
+                  ]}
                   placeholderStyle={{ color: '#94a3b8' }}
                   data={departments}
                   labelField="label"
@@ -226,16 +316,20 @@ const SignUpPage = () => {
                 <Controller
                   control={control}
                   name="session"
+                  rules={{ required: 'Required' }}
                   render={({ field: { onChange, value } }) => (
                     <Dropdown
-                      style={{
-                        height: 56,
-                        borderColor: '#cbd5e1',
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        paddingHorizontal: 16,
-                        marginBottom: 16,
-                      }}
+                      style={[
+                        {
+                          height: 56,
+                          borderColor: '#cbd5e1',
+                          borderWidth: 1,
+                          borderRadius: 12,
+                          paddingHorizontal: 16,
+                          marginBottom: 16,
+                        },
+                        errors.session && { borderColor: 'red' },
+                      ]}
                       placeholderStyle={{ color: '#94a3b8' }}
                       data={sessions}
                       labelField="label"
@@ -251,10 +345,9 @@ const SignUpPage = () => {
           </View>
         )}
 
-        {/* Submit Button */}
         <TouchableOpacity
           className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(onSubmit, onError)}
           disabled={loading}>
           {loading ? (
             <ActivityIndicator color="white" />
@@ -263,7 +356,7 @@ const SignUpPage = () => {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/sign-in')} className="mt-6">
+        <TouchableOpacity onPress={() => router.push('/')} className="my-8">
           <Text className="text-center text-slate-500">
             Already have an account? <Text className="font-bold text-blue-600">Sign In</Text>
           </Text>
