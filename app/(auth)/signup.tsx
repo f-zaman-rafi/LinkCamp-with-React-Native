@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
+import { useUserContext } from '../../providers/UserContext';
 
 /* ---------- Types ---------- */
 type UserType = 'student' | 'teacher' | 'admin';
@@ -29,11 +30,13 @@ type SignUpFormData = {
 
 const SignUpPage = () => {
   const router = useRouter();
-  const { signUp } = useAuth(); // Hook to handle Firebase authentication
+  const { signUp, user } = useAuth(); // Hook to handle Firebase authentication
   const axiosCommon = useAxiosCommon(); // Custom hook for Axios requests
-
+  const { setUserData } = useUserContext();
   const [loading, setLoading] = useState(false); // Loading state for UI
   const [showPassword, setShowPassword] = useState(false); // Toggle for password visibility
+
+  console.log('this is user', user);
 
   // Hook form setup for managing form data
   const {
@@ -67,15 +70,15 @@ const SignUpPage = () => {
     setLoading(true); // Set loading state to true while signing up
 
     try {
-      // 1. Sign up the user with Firebase
+      // Sign up the user with Firebase
       const userCredential = await signUp(data.email, data.password);
       const user = userCredential.user; // Get user info after successful sign up
 
-      // 2. Get Firebase ID Token after signing up
+      // Get Firebase ID Token after signing up
       const idToken = await user.getIdToken(); // Fetch the Firebase ID token for authentication
       console.log('Firebase ID Token:', idToken); // Log the token for debugging
 
-      // 3. Prepare user data for MongoDB
+      // Prepare user data for MongoDB
       const userInfo = {
         email: data.email,
         user_id: data.Id || '', // If no ID provided, use an empty string
@@ -86,7 +89,7 @@ const SignUpPage = () => {
         name: '', // Empty string for name until it is set later
       };
 
-      // 4. Send the Firebase ID token and user data to backend
+      // Send the Firebase ID token and user data to backend
       const response = await axiosCommon.post('/users', userInfo, {
         headers: {
           Authorization: `Bearer ${idToken}`, // Pass Firebase ID token in the header for auth
@@ -95,11 +98,18 @@ const SignUpPage = () => {
 
       console.log('Backend response:', response); // Log the backend response
 
-      // 5. Show success alert and navigate to pending request page
+      // Set the global state with user data after successful signup
+      setUserData({
+        role: data.userType, // Set the user role (could be part of the response from backend)
+        verify: 'pending', // Set the initial verification status to pending
+        name: '', // Empty name, to be updated later
+      });
+
+      // Show success alert and navigate to pending request page
       Alert.alert(
         'Success',
         "You're all set! Just hang tight—your account will be approved shortly.",
-        [{ text: 'OK', onPress: () => router.replace('/pending-request') }] // Redirect to pending page
+        [{ text: 'OK', onPress: () => router.replace('/pending') }] // Redirect to pending page
       );
     } catch (error: any) {
       console.error('Signup error:', error); // Log the error for debugging

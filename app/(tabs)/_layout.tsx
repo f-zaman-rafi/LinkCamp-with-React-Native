@@ -25,6 +25,13 @@ const TabLayout = () => {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="pending"
+        options={{
+          tabBarLabel: 'Pending',
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 };

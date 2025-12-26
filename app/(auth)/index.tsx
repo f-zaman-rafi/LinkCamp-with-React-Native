@@ -3,11 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } fro
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import useAuth from '../../Hooks/useAuth';
+import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = () => {
   const router = useRouter();
   const { signIn } = useAuth();
+  const axiosCommon = useAxiosCommon();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -22,8 +24,24 @@ const LoginScreen = () => {
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
+      // Sign the user in
       await signIn(data.email, data.password);
-      router.replace('/(tabs)/feed');
+
+      // Send the user's email to the server for session management
+      axiosCommon.post('/login', { email: data.email }).then(async () => {
+        // Fetch the latest user info after successful login
+        const userResponse = await axiosCommon.get(`/user/${data.email}`);
+        const user = userResponse.data;
+
+        // Check the user's verification status
+        if (user?.verify === 'pending') {
+          router.replace('/pending');
+        } else if (user?.verify === 'approved' && user?.name === '') {
+          router.replace('/welcome');
+        } else {
+          router.replace('/(tabs)/feed');
+        }
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An unknown error occurred';
       Alert.alert('Error', message);

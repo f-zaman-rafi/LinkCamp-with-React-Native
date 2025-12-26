@@ -1,4 +1,9 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
+import { getAuth, initializeAuth } from 'firebase/auth';
+import { getReactNativePersistence } from '@firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { Platform } from 'react-native';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -9,5 +14,20 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ Prevent re-initializing Firebase app on refresh
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+export const auth =
+  Platform.OS === 'web'
+    ? getAuth(app)
+    : (() => {
+        try {
+          return initializeAuth(app, {
+            persistence: getReactNativePersistence(AsyncStorage),
+          });
+        } catch {
+          return getAuth(app);
+        }
+      })();
+
 export default app;
