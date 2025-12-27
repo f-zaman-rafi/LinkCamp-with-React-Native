@@ -5,11 +5,13 @@ import { useForm, Controller } from 'react-hook-form';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { Ionicons } from '@expo/vector-icons';
+import { useUserContext } from '../../providers/UserContext'; // Importing the user context
 
 const LoginScreen = () => {
   const router = useRouter();
   const { signIn } = useAuth();
   const axiosCommon = useAxiosCommon();
+  const { setUserData } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,27 +26,49 @@ const LoginScreen = () => {
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // Sign the user in
-      await signIn(data.email, data.password);
+      // Sign in
+      const credential = await signIn(data.email, data.password);
 
-      // Send the user's email to the server for session management
-      axiosCommon.post('/login', { email: data.email }).then(async () => {
-        // Fetch the latest user info after successful login
-        const userResponse = await axiosCommon.get(`/user/${data.email}`);
-        const user = userResponse.data;
+      // Check email verification
+      const currentUser = credential.user;
+      await currentUser.reload();
+      if (!currentUser.emailVerified) {
+        Alert.alert('Verify Email', 'Please verify your email before continuing.');
+        router.replace('/(auth)/verify-email');
+        return;
+      }
 
-        // Check the user's verification status
-        if (user?.verify === 'pending') {
-          router.replace('/pending');
-        } else if (user?.verify === 'approved' && user?.name === '') {
-          router.replace('/welcome');
-        } else {
-          router.replace('/(tabs)/feed');
-        }
+      // Get token for backend calls
+      const idToken = await currentUser.getIdToken();
+
+      // Fetch user from backend
+      const userResponse = await axiosCommon.get(`/user/${data.email}`, {
+        headers: { Authorization: `Bearer ${idToken}` },
       });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred';
-      Alert.alert('Error', message);
+      const user = userResponse.data;
+
+      // If profile not completed, go to create-profile
+      if (!user?.userType) {
+        router.replace('/(auth)/create-profile');
+        return;
+      }
+
+      // Save user data
+      setUserData({
+        name: user.fullName,
+        userType: user.userType,
+        user_id: user.Id || '',
+        department: user.department || '',
+      });
+
+      // Go to app
+      router.replace('/(tabs)/feed');
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        router.replace('/(auth)/create-profile');
+        return;
+      }
+      Alert.alert('Login Error', error?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -138,6 +162,22 @@ const LoginScreen = () => {
           New to LinkCamp?{' '}
           <Text onPress={() => router.push('/signup')} className="font-bold text-blue-600">
             Create Account
+          </Text>
+        </Text>
+      </View>
+      <View className="mt-8">
+        <Text className="text-center text-slate-500">
+          New to LinkCamp?{' '}
+          <Text onPress={() => router.push('/create-profile')} className="font-bold text-blue-600">
+            --prof--
+          </Text>
+        </Text>
+      </View>
+      <View className="mt-8">
+        <Text className="text-center text-slate-500">
+          New to LinkCamp?{' '}
+          <Text onPress={() => router.push('/verify-email')} className="font-bold text-blue-600">
+            --verE--
           </Text>
         </Text>
       </View>

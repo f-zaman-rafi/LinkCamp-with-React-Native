@@ -3,11 +3,12 @@ import { Redirect, Stack } from 'expo-router';
 import AuthProvider from '../providers/AuthProviders';
 import useAuth from '../Hooks/useAuth';
 import { ActivityIndicator, View } from 'react-native';
-import { UserProvider } from '../providers/UserContext';
+import { UserProvider, useUserContext } from '../providers/UserContext';
 
 const AuthStack = () => {
   // Access authentication state from Firebase auth context
   const { user, loading } = useAuth();
+  const { userData } = useUserContext();
 
   // While Firebase restores auth state (on app start / reload),
   // show a loading indicator to prevent incorrect routing
@@ -19,19 +20,34 @@ const AuthStack = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <>
+        <Redirect href="/(auth)" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </>
+    );
+  }
+
+  if (!user.emailVerified) {
+    return (
+      <>
+        <Redirect href="/(auth)/verify-email" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </>
+    );
+  }
+  if (!userData || !userData.userType) {
+    return (
+      <>
+        <Redirect href="/(auth)/create-profile" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </>
+    );
+  }
   return (
     <>
-      {/* 
-        Route user based on authentication state:
-        - Authenticated users go to the main tab navigation
-        - Unauthenticated users go to auth screens (login/signup)
-      */}
-      {user ? <Redirect href="/(tabs)" /> : <Redirect href="/(auth)" />}
-
-      {/* 
-        Stack must always be mounted for Expo Router.
-        Screens are resolved based on the active route group.
-      */}
+      <Redirect href="/(tabs)" />
       <Stack screenOptions={{ headerShown: false }} />
     </>
   );

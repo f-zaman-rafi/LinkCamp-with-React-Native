@@ -3,9 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define the type for the user data
 interface UserData {
-  role: string | null;
-  verify: string | null;
   name: string | null;
+  userType: string | null;
+  user_id: string | null;
+  department: string | null;
+  session?: string | null;
+  gender?: string | null;
+  verify?: string | null;
 }
 
 // Create the context with a default value (empty user data)
