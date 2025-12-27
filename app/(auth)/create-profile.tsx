@@ -29,10 +29,10 @@ type ProfileFormData = {
 };
 
 const CreateProfile = () => {
-  const router = useRouter();
-  const axiosCommon = useAxiosCommon();
-  const { setUserData, setProfileChecked } = useUserContext();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter(); // Router for navigation
+  const axiosCommon = useAxiosCommon(); // Axios hook for API
+  const { setUserData, setProfileChecked } = useUserContext(); // User context setters
+  const [loading, setLoading] = useState(false); // Loading state
 
   const {
     control,
@@ -52,36 +52,42 @@ const CreateProfile = () => {
     },
   });
 
+  // Watch userType to conditionally render fields
   const selectedUserType = watch('userType');
 
+  // Reset dependent fields when userType changes
   React.useEffect(() => {
+    // Reset fields when userType changes
     setValue('Id', '');
     setValue('department', '');
     setValue('session', '');
   }, [selectedUserType, setValue]);
 
+  // Handle form submission
   const onSubmit = async (data: ProfileFormData) => {
     setLoading(true);
     try {
+      // Ensure auth user exists
       if (!auth.currentUser) {
         Alert.alert('No user', 'Please sign in again.');
         router.replace('/(auth)');
         return;
       }
 
-      await auth.currentUser.reload();
+      await auth.currentUser.reload(); // Refresh user
       if (!auth.currentUser.emailVerified) {
         Alert.alert('Not verified', 'Please verify your email first.');
-        router.replace('/(auth)/verify-email');
+        router.replace('/(auth)/verify-email'); // Go to verify page
 
         return;
       }
 
-      const idToken = await auth.currentUser.getIdToken();
+      const idToken = await auth.currentUser.getIdToken(); // Get token
       const email = auth.currentUser.email;
 
-      const fullName = `${data.firstName} ${data.lastName}`.trim();
+      const fullName = `${data.firstName} ${data.lastName}`.trim(); // Combine names
 
+      // Prepare user info
       const userInfo = {
         email,
         user_id: data.Id || '',
@@ -93,10 +99,12 @@ const CreateProfile = () => {
         gender: data.gender,
       };
 
+      // Post profile info to backend
       await axiosCommon.post('/users', userInfo, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
 
+      // Update user context
       setUserData({
         name: fullName,
         userType: data.userType,
@@ -104,10 +112,10 @@ const CreateProfile = () => {
         department: data.department || '',
       });
 
-      setProfileChecked(true);
+      setProfileChecked(true); // Mark profile as checked
 
       Alert.alert('Success', 'Profile created! Your account is pending approval.', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)/pending') },
+        { text: 'OK', onPress: () => router.replace('/(tabs)') },
       ]);
     } catch (error: any) {
       const message =
@@ -120,6 +128,7 @@ const CreateProfile = () => {
     }
   };
 
+  // Department options
   const departments = [
     'Computer Science',
     'Electrical Engineering',
@@ -131,13 +140,14 @@ const CreateProfile = () => {
     'English',
     'Law',
     'Pharmacy',
-  ].map((item) => ({ label: item, value: item }));
-
+  ].map((item) => ({ label: item, value: item })); // Dept options
+  // Session options
   const sessions = Array.from({ length: 2025 - 2003 + 1 }, (_, i) => {
     const year = 2025 - i;
     return { label: `${year}-${year + 1}`, value: `${year}-${year + 1}` };
   });
 
+  // Gender options
   const genders = [
     { label: 'Male', value: 'male' },
     { label: 'Female', value: 'female' },
@@ -145,12 +155,14 @@ const CreateProfile = () => {
   ];
 
   return (
-    <View className="flex-1 bg-white px-6">
+    <View className="flex-1 justify-center bg-white px-6">
+      {/* Header */}
       <View className="mt-20 mb-4">
         <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
         <Text className="mt-2 text-lg text-slate-500">Complete your profile</Text>
       </View>
 
+      {/* Profile Form */}
       <ScrollView
         className="mb-12"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -340,7 +352,7 @@ const CreateProfile = () => {
         )}
 
         <TouchableOpacity
-          className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+          className={`my-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
           onPress={handleSubmit(onSubmit)}
           disabled={loading}>
           {loading ? (

@@ -8,12 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserContext } from '../../providers/UserContext'; // Importing the user context
 
 const LoginScreen = () => {
-  const router = useRouter();
-  const { signIn } = useAuth();
-  const axiosCommon = useAxiosCommon();
-  const { setUserData, setProfileChecked } = useUserContext();
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter(); // Navigation
+  const { signIn } = useAuth(); // Auth hook
+  const axiosCommon = useAxiosCommon(); // Axios hook
+  const { setUserData, setProfileChecked } = useUserContext(); // User context
+  const [loading, setLoading] = useState(false); // Loading state
+  const [showPassword, setShowPassword] = useState(false); // Show/hide password
 
   const {
     control,
@@ -80,11 +80,12 @@ const LoginScreen = () => {
 
   return (
     <View className="flex-1 justify-center bg-white px-6">
+      {/*  Header */}
       <View className="mb-8">
         <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
         <Text className="mt-2 text-lg text-slate-500">University Campus Platform</Text>
       </View>
-
+      {/*  Login Form */}
       <View>
         <View className="mb-4">
           <Text className="mb-2 font-semibold text-slate-700">Email</Text>
@@ -160,28 +161,12 @@ const LoginScreen = () => {
           )}
         </TouchableOpacity>
       </View>
-
+      {/*  Signup Link */}
       <View className="mt-8">
         <Text className="text-center text-slate-500">
           New to LinkCamp?{' '}
           <Text onPress={() => router.push('/signup')} className="font-bold text-blue-600">
             Create Account
-          </Text>
-        </Text>
-      </View>
-      <View className="mt-8">
-        <Text className="text-center text-slate-500">
-          New to LinkCamp?{' '}
-          <Text onPress={() => router.push('/create-profile')} className="font-bold text-blue-600">
-            --prof--
-          </Text>
-        </Text>
-      </View>
-      <View className="mt-8">
-        <Text className="text-center text-slate-500">
-          New to LinkCamp?{' '}
-          <Text onPress={() => router.push('/verify-email')} className="font-bold text-blue-600">
-            --verE--
           </Text>
         </Text>
       </View>

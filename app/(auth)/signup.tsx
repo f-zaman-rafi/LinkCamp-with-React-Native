@@ -17,6 +17,7 @@ const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Form setup
   const {
     control,
     handleSubmit,
@@ -28,6 +29,7 @@ const SignUpPage = () => {
     },
   });
 
+  // Handle form submission
   const onSubmit = async (data: SignUpFormData) => {
     setLoading(true);
     try {
