@@ -38,8 +38,7 @@ const SignUpPage = () => {
 
       Alert.alert(
         'Verify Email',
-        'We sent a verification link to your email. Please verify to continue.',
-        [{ text: 'OK', onPress: () => router.replace('/verify-email') }]
+        'We sent a verification link to your email. Please verify to continue.'
       );
     } catch (error: any) {
       let errorMessage = 'An unexpected error occurred. Please try again later.';

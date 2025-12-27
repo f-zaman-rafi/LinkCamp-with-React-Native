@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ const LoginScreen = () => {
   const router = useRouter();
   const { signIn } = useAuth();
   const axiosCommon = useAxiosCommon();
-  const { setUserData } = useUserContext();
+  const { setUserData, setProfileChecked } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,6 +46,7 @@ const LoginScreen = () => {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       const user = userResponse.data;
+      setProfileChecked(true);
 
       // If profile not completed, go to create-profile
       if (!user?.userType) {
@@ -55,20 +56,23 @@ const LoginScreen = () => {
 
       // Save user data
       setUserData({
-        name: user.fullName,
+        name: user.name,
         userType: user.userType,
-        user_id: user.Id || '',
+        user_id: user.user_id || '',
         department: user.department || '',
       });
 
       // Go to app
-      router.replace('/(tabs)/feed');
+      router.replace('/(tabs)');
     } catch (error: any) {
       if (error?.response?.status === 404) {
+        setProfileChecked(true);
         router.replace('/(auth)/create-profile');
         return;
       }
-      Alert.alert('Login Error', error?.message || 'Login failed');
+      Alert.alert('Login Error', error?.message, [
+        { text: 'OK', onPress: () => router.replace('/(auth)') },
+      ]);
     } finally {
       setLoading(false);
     }

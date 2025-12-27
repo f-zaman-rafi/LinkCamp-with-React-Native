@@ -16,14 +16,22 @@ interface UserData {
 const UserContext = createContext<{
   userData: UserData | null;
   setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
+  userDataLoading: boolean;
+  profileChecked: boolean;
+  setProfileChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   userData: null,
-  setUserData: () => {}, // Placeholder for the setter function
+  setUserData: () => {},
+  userDataLoading: true,
+  profileChecked: false,
+  setProfileChecked: () => {},
 });
 
 // UserProvider component to manage and provide user data
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserData | null>(null); // Initialize user data as null
+  const [userDataLoading, setUserDataLoading] = useState(true);
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -31,6 +39,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (stored) {
         setUserData(JSON.parse(stored));
       }
+      setProfileChecked(true); // Mark profile as checked if data exists
+      setUserDataLoading(false);
     };
     loadUserData();
   }, []);
@@ -43,7 +53,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [userData]);
 
-  return <UserContext.Provider value={{ userData, setUserData }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider
+      value={{ userData, setUserData, userDataLoading, profileChecked, setProfileChecked }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 // Export the UserContext to access from other parts of the app

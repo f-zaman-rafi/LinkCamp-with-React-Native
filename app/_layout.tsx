@@ -1,18 +1,22 @@
 import React from 'react';
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, useSegments } from 'expo-router';
 import AuthProvider from '../providers/AuthProviders';
 import useAuth from '../Hooks/useAuth';
 import { ActivityIndicator, View } from 'react-native';
 import { UserProvider, useUserContext } from '../providers/UserContext';
 
 const AuthStack = () => {
-  // Access authentication state from Firebase auth context
+  const segments = useSegments() as string[];
   const { user, loading } = useAuth();
-  const { userData } = useUserContext();
+  const { userData, userDataLoading, profileChecked } = useUserContext();
 
-  // While Firebase restores auth state (on app start / reload),
-  // show a loading indicator to prevent incorrect routing
-  if (loading) {
+  const inAuthGroup = segments[0] === '(auth)';
+  const onVerify = segments[0] === '(auth)' && segments[1] === 'verify-email';
+  const onCreate = segments[0] === '(auth)' && segments[1] === 'create-profile';
+
+  const shouldWaitForProfile = user?.emailVerified && !profileChecked && !onCreate;
+
+  if (loading || userDataLoading || shouldWaitForProfile) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -21,36 +25,28 @@ const AuthStack = () => {
   }
 
   if (!user) {
-    return (
-      <>
-        <Redirect href="/(auth)" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </>
-    );
+    // block protected auth pages when not signed in
+    if (onVerify || onCreate) return <Redirect href="/(auth)" />;
+
+    if (!inAuthGroup) return <Redirect href="/(auth)" />;
+    return <Stack screenOptions={{ headerShown: false }} />;
   }
 
   if (!user.emailVerified) {
-    return (
-      <>
-        <Redirect href="/(auth)/verify-email" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </>
-    );
+    if (!onVerify) return <Redirect href="/(auth)/verify-email" />;
+    return <Stack screenOptions={{ headerShown: false }} />;
   }
+
   if (!userData || !userData.userType) {
-    return (
-      <>
-        <Redirect href="/(auth)/create-profile" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </>
-    );
+    if (!onCreate) return <Redirect href="/(auth)/create-profile" />;
+    return <Stack screenOptions={{ headerShown: false }} />;
   }
-  return (
-    <>
-      <Redirect href="/(tabs)" />
-      <Stack screenOptions={{ headerShown: false }} />
-    </>
-  );
+
+  if (inAuthGroup) {
+    return <Redirect href="/(tabs)" />;
+  }
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 };
 
 const RootLayout = () => {

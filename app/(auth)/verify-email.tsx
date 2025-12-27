@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-na
 import { useRouter } from 'expo-router';
 import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../firebase/firebase.config';
+import useAuth from '../../Hooks/useAuth';
 
 const VerifyEmail = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const { logOut } = useAuth();
 
   const handleResend = async () => {
     try {
@@ -90,10 +92,16 @@ const VerifyEmail = () => {
           Didn’t get the email? Check spam or try resending.
         </Text>
       </View>
-
-      <TouchableOpacity className="mt-6" onPress={() => router.replace('/(auth)')}>
-        <Text className="text-center font-semibold text-blue-600">Back to Login</Text>
-      </TouchableOpacity>
+      <View className="mt-6 flex-row justify-center">
+        <Text>Wrong email? </Text>
+        <TouchableOpacity
+          onPress={async () => {
+            await logOut();
+            router.replace('/(auth)');
+          }}>
+          <Text className="font-semibold text-blue-600">Go back to login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -5,13 +5,14 @@ import useAuth from '../../Hooks/useAuth';
 import { useUserContext } from '../../providers/UserContext';
 
 const SomeComponent = () => {
-  const { setUserData } = useUserContext(); // Access the setUserData function from context
+  const { setUserData, setProfileChecked } = useUserContext(); // Access the setUserData function from context
   const { logOut, loading } = useAuth(); // Get user and logOut function from useAuth hook
 
   const handleLogout = async () => {
     try {
       await logOut(); // Log out the user
       setUserData(null); // Clear user data from context
+      setProfileChecked(false);
     } catch (error) {
       console.error('Logout failed:', error); // Handle any errors during logout
     }

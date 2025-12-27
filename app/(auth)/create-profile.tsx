@@ -31,7 +31,7 @@ type ProfileFormData = {
 const CreateProfile = () => {
   const router = useRouter();
   const axiosCommon = useAxiosCommon();
-  const { setUserData } = useUserContext();
+  const { setUserData, setProfileChecked } = useUserContext();
   const [loading, setLoading] = useState(false);
 
   const {
@@ -72,7 +72,8 @@ const CreateProfile = () => {
       await auth.currentUser.reload();
       if (!auth.currentUser.emailVerified) {
         Alert.alert('Not verified', 'Please verify your email first.');
-        router.replace('/verify-email');
+        router.replace('/(auth)/verify-email');
+
         return;
       }
 
@@ -102,6 +103,8 @@ const CreateProfile = () => {
         user_id: data.Id || '',
         department: data.department || '',
       });
+
+      setProfileChecked(true);
 
       Alert.alert('Success', 'Profile created! Your account is pending approval.', [
         { text: 'OK', onPress: () => router.replace('/(tabs)/pending') },
