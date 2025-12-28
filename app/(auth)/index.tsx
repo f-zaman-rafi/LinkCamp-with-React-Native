@@ -25,6 +25,8 @@ const LoginScreen = () => {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
+    setProfileChecked(false);
+
     try {
       // Sign in
       const credential = await signIn(data.email, data.password);
@@ -45,11 +47,13 @@ const LoginScreen = () => {
       const userResponse = await axiosCommon.get(`/user/${data.email}`, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
-      const user = userResponse.data;
-      setProfileChecked(true);
 
-      // If profile not completed, go to create-profile
-      if (!user?.userType) {
+      // Extract user data
+      const user = userResponse.data;
+      const userType = user.userType ?? user.role ?? user.user_type;
+
+      if (!userType) {
+        setProfileChecked(true);
         router.replace('/(auth)/create-profile');
         return;
       }
@@ -61,6 +65,9 @@ const LoginScreen = () => {
         user_id: user.user_id || '',
         department: user.department || '',
       });
+
+      // Mark profile as checked
+      setProfileChecked(true);
 
       // Go to app
       router.replace('/(tabs)');
