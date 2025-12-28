@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { useRouter } from 'expo-router';
@@ -14,9 +15,10 @@ import { Dropdown } from 'react-native-element-dropdown';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { useUserContext } from '../../providers/UserContext';
 import { auth } from '../../firebase/firebase.config';
+import * as ImagePicker from 'expo-image-picker';
 
 type UserType = 'student' | 'teacher' | 'admin';
-type GenderType = 'male' | 'female' | 'other';
+type GenderType = '' | 'male' | 'female' | 'other';
 
 type ProfileFormData = {
   firstName: string;
@@ -26,6 +28,7 @@ type ProfileFormData = {
   Id?: string;
   department?: string;
   session?: string;
+  photo?: string;
 };
 
 const CreateProfile = () => {
@@ -33,18 +36,21 @@ const CreateProfile = () => {
   const axiosCommon = useAxiosCommon(); // Axios hook for API
   const { setUserData, setProfileChecked } = useUserContext(); // User context setters
   const [loading, setLoading] = useState(false); // Loading state
+  const [photoUri, setPhotoUri] = useState<string | null>(null); // Profile photo URI
 
   const {
     control,
     handleSubmit,
     watch,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
       firstName: '',
       lastName: '',
-      gender: 'male',
+      gender: '',
       userType: 'student',
       Id: '',
       department: '',
@@ -67,52 +73,58 @@ const CreateProfile = () => {
   const onSubmit = async (data: ProfileFormData) => {
     setLoading(true);
     try {
-      // Ensure auth user exists
       if (!auth.currentUser) {
         Alert.alert('No user', 'Please sign in again.');
-        router.replace('/(auth)');
         return;
       }
 
-      await auth.currentUser.reload(); // Refresh user
+      await auth.currentUser.reload();
       if (!auth.currentUser.emailVerified) {
         Alert.alert('Not verified', 'Please verify your email first.');
-        router.replace('/(auth)/verify-email'); // Go to verify page
-
+        router.replace('/(auth)/verify-email');
         return;
       }
 
-      const idToken = await auth.currentUser.getIdToken(); // Get token
-      const email = auth.currentUser.email;
+      const idToken = await auth.currentUser.getIdToken();
+      const email = auth.currentUser.email || '';
+      const fullName = `${data.firstName} ${data.lastName}`.trim();
 
-      const fullName = `${data.firstName} ${data.lastName}`.trim(); // Combine names
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('user_id', data.Id || '');
+      formData.append('userType', data.userType);
+      formData.append('department', data.department || '');
+      formData.append('session', data.session || '');
+      formData.append('verify', 'pending');
+      formData.append('name', fullName);
+      formData.append('gender', data.gender);
 
-      // Prepare user info
-      const userInfo = {
-        email,
-        user_id: data.Id || '',
-        userType: data.userType,
-        department: data.department || '',
-        session: data.session || '',
-        verify: 'pending',
-        name: fullName,
-        gender: data.gender,
-      };
+      if (photoUri) {
+        formData.append('photo', {
+          uri: photoUri,
+          name: 'profile.jpg',
+          type: 'image/jpeg',
+        } as any);
+      }
 
-      // Post profile info to backend
-      await axiosCommon.post('/users', userInfo, {
-        headers: { Authorization: `Bearer ${idToken}` },
+      const response = await axiosCommon.post('/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${idToken}`,
+        },
       });
 
-      // Update user context
+      const photoUrl = response?.data?.user?.photo || '';
+
       setUserData({
         name: fullName,
         userType: data.userType,
         user_id: data.Id || '',
         department: data.department || '',
+        photo: photoUrl,
       });
 
-      setProfileChecked(true); // Mark profile as checked
+      setProfileChecked(true);
 
       Alert.alert('Success', 'Profile created! Your account is pending approval.', [
         { text: 'OK', onPress: () => router.replace('/(tabs)') },
@@ -154,6 +166,25 @@ const CreateProfile = () => {
     { label: 'Other', value: 'other' },
   ];
 
+  const pickPhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setPhotoUri(result.assets[0].uri);
+      clearErrors('photo');
+    }
+  };
+
+  const onError = (formErrors: any) => {
+    if (!photoUri) {
+      setError('photo', { type: 'required', message: 'Photo is required' });
+    }
+  };
+
   return (
     <View className="flex-1 justify-center bg-white px-6">
       {/* Header */}
@@ -163,10 +194,36 @@ const CreateProfile = () => {
       </View>
 
       {/* Profile Form */}
+
       <ScrollView
-        className="mb-12"
+        className="mt-8 mb-12"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}>
+        {/* // Profile Photo Picker */}
+        {photoUri ? (
+          <Image
+            source={{ uri: photoUri }}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              alignSelf: 'center',
+              marginBottom: 12,
+            }}
+          />
+        ) : null}
+        <View className="mb-4">
+          <TouchableOpacity
+            onPress={pickPhoto}
+            className="rounded-xl border border-slate-300 px-4 py-3">
+            <Text className="text-center text-slate-600">
+              {photoUri ? 'Photo Selected' : 'Select Profile Photo'}
+            </Text>
+          </TouchableOpacity>
+          {errors.photo && (
+            <Text className="mt-1 text-xs text-red-500">{errors.photo.message}</Text>
+          )}
+        </View>
         <View className="mb-4">
           <Text className="mb-2 font-semibold">First Name</Text>
           <Controller
@@ -207,6 +264,7 @@ const CreateProfile = () => {
           )}
         </View>
 
+        {/* // Gender Dropdown */}
         <View className="mb-4">
           <Text className="mb-2 font-semibold">Gender</Text>
           <Controller
@@ -236,6 +294,9 @@ const CreateProfile = () => {
               />
             )}
           />
+          {errors.gender && (
+            <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.gender.message}</Text>
+          )}
         </View>
 
         <View className="mb-6">
@@ -261,6 +322,7 @@ const CreateProfile = () => {
           />
         </View>
 
+        {/* // Conditional Fields for Student and Teacher */}
         {(selectedUserType === 'student' || selectedUserType === 'teacher') && (
           <View>
             <Text className="mb-2 font-semibold">
@@ -287,11 +349,12 @@ const CreateProfile = () => {
               <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.Id.message}</Text>
             )}
 
+            {/* // Department field */}
             <Text className="mb-2 font-semibold">Department</Text>
             <Controller
               control={control}
               name="department"
-              rules={{ required: 'Required' }}
+              rules={{ required: 'Department is required' }}
               render={({ field: { onChange, value } }) => (
                 <Dropdown
                   style={[
@@ -315,14 +378,18 @@ const CreateProfile = () => {
                 />
               )}
             />
+            {errors.department && (
+              <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.department.message}</Text>
+            )}
 
+            {/* // Session field for students */}
             {selectedUserType === 'student' && (
-              <View>
+              <View className="">
                 <Text className="mb-2 font-semibold">Session</Text>
                 <Controller
                   control={control}
                   name="session"
-                  rules={{ required: 'Required' }}
+                  rules={{ required: 'Session is required' }}
                   render={({ field: { onChange, value } }) => (
                     <Dropdown
                       style={[
@@ -346,6 +413,9 @@ const CreateProfile = () => {
                     />
                   )}
                 />
+                {errors.session && (
+                  <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.session.message}</Text>
+                )}
               </View>
             )}
           </View>
@@ -353,7 +423,7 @@ const CreateProfile = () => {
 
         <TouchableOpacity
           className={`my-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(onSubmit, onError)}
           disabled={loading}>
           {loading ? (
             <ActivityIndicator color="white" />

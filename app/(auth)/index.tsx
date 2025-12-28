@@ -94,6 +94,7 @@ const LoginScreen = () => {
       </View>
       {/*  Login Form */}
       <View>
+        {/*  Email Field */}
         <View className="mb-4">
           <Text className="mb-2 font-semibold text-slate-700">Email</Text>
           <Controller
@@ -121,8 +122,8 @@ const LoginScreen = () => {
             <Text className="mt-1 text-xs text-red-500">{errors.email.message}</Text>
           )}
         </View>
-
-        <View className="mb-6">
+        {/*  Password Field */}
+        <View className="mb-3">
           <Text className="mb-2 font-semibold text-slate-700">Password</Text>
           <View className="relative justify-center">
             <Controller
@@ -157,6 +158,16 @@ const LoginScreen = () => {
           )}
         </View>
 
+        <View className="mr-2 mb-6 flex-row justify-end">
+          <Text className="text-center text-slate-500">
+            <Text
+              onPress={() => router.push('/forgot-password')}
+              className="font-bold text-blue-600">
+              Forgot Password?
+            </Text>
+          </Text>
+        </View>
+
         <TouchableOpacity
           className={`w-full rounded-xl py-4 shadow-sm ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
           onPress={handleSubmit(onSubmit)}
@@ -168,6 +179,7 @@ const LoginScreen = () => {
           )}
         </TouchableOpacity>
       </View>
+
       {/*  Signup Link */}
       <View className="mt-8">
         <Text className="text-center text-slate-500">

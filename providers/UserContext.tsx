@@ -7,9 +7,10 @@ interface UserData {
   userType: string | null;
   user_id: string | null;
   department: string | null;
-  session?: string | null;
   gender?: string | null;
+  session?: string | null;
   verify?: string | null;
+  photo?: string | null;
 }
 
 // Create the context with a default value (empty user data)

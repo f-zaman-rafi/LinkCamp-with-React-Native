@@ -15,6 +15,9 @@ const AuthLayout = () => {
 
       {/* Create profile after verification */}
       <Stack.Screen name="create-profile" />
+
+      {/* Forgot password screen */}
+      <Stack.Screen name="forgot-password" />
     </Stack>
   );
 };
