@@ -85,6 +85,12 @@ const CreateProfile = () => {
         return;
       }
 
+      if (!photoUri) {
+        setError('photo', { type: 'required', message: 'Photo is required' });
+        setLoading(false);
+        return;
+      }
+
       const idToken = await auth.currentUser.getIdToken();
       const email = auth.currentUser.email || '';
       const fullName = `${data.firstName} ${data.lastName}`.trim();
