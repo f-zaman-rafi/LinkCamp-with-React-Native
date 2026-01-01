@@ -19,6 +19,13 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="addPost"
+        options={{
+          tabBarLabel: 'Add Post',
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
         name="noticeboard"
         options={{
           tabBarLabel: 'Administration Feed',

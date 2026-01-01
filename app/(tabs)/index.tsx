@@ -13,7 +13,9 @@ const Home = () => {
       <Text className="text-black-500 text-4xl font-bold">{userData?.userType}</Text>
       <Text className="text-black-500 text-4xl font-bold">{userData?.department}</Text>
       <Text className="text-black-500 text-4xl font-bold">{userData?.user_id}</Text>
+
       {/* Replace <img> with <Image> component */}
+
       <View className="rounded-full">
         <Image source={{ uri: userData?.photo }} style={{ width: 100, height: 100 }} />
       </View>

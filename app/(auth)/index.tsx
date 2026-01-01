@@ -64,6 +64,7 @@ const LoginScreen = () => {
         userType: user.userType,
         user_id: user.user_id || '',
         department: user.department || '',
+        photo: user.photo || '',
       });
 
       // Mark profile as checked
