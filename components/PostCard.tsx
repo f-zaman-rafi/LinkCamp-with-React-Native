@@ -1,30 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
-export type PostType = 'general' | 'teacher' | 'admin' | 'repost';
-
-export type ApiPost = {
-  _id: string;
-  email?: string;
-  content?: string;
-  photo?: string;
-  createdAt?: string;
-  postType?: PostType;
-  repostOf?: string | null;
-  user?: {
-    name?: string;
-    photo?: string;
-    user_type?: string;
-  };
-};
-
-export type VoteType = 'upvote' | 'downvote';
-
-export type VoteCounts = {
-  upvotes: number;
-  downvotes: number;
-};
+import PostHeader from './PostHeader';
+import PostActions from './PostActions';
+import RepostPreview from './ReviewPreview';
+import { ApiPost, VoteCounts, VoteType } from '../types/feed';
 
 type PostCardProps = {
   post: ApiPost;
@@ -41,48 +20,12 @@ type PostCardProps = {
   onQuickRepost: (rootId: string) => void;
 };
 
-const postTypeLabel = (type?: PostType) => {
+const postTypeLabel = (type?: ApiPost['postType']) => {
   if (type === 'repost') return 'Repost';
   if (type === 'teacher') return 'Teacher Announcement';
   if (type === 'admin') return 'Official Notice';
   if (type === 'general') return 'General Post';
   return '';
-};
-
-const RepostPreview = ({ post }: { post?: ApiPost }) => {
-  if (!post) {
-    return (
-      <View className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-        <Text className="text-xs text-slate-500">Original post unavailable.</Text>
-      </View>
-    );
-  }
-
-  const label = postTypeLabel(post.postType);
-
-  return (
-    <View className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <View className="flex-row items-center gap-2">
-        {post.user?.photo ? (
-          <Image source={{ uri: post.user.photo }} className="h-6 w-6 rounded-full" />
-        ) : (
-          <View className="h-6 w-6 rounded-full bg-slate-200" />
-        )}
-        <View>
-          <Text className="text-xs font-semibold text-slate-800">
-            {post.user?.name || 'Unknown'}
-          </Text>
-          {label ? <Text className="text-[10px] text-slate-500">{label}</Text> : null}
-        </View>
-      </View>
-
-      {post.content ? <Text className="mt-2 text-xs text-slate-800">{post.content}</Text> : null}
-
-      {post.photo ? (
-        <Image source={{ uri: post.photo }} className="mt-2 h-40 w-full rounded-lg" />
-      ) : null}
-    </View>
-  );
 };
 
 const PostCard = ({
@@ -102,83 +45,75 @@ const PostCard = ({
   const label = postTypeLabel(post.postType);
   const rootId = post.repostOf ? post.repostOf : post._id;
 
+  const STEP = 300;
+  const [visibleChars, setVisibleChars] = useState(STEP);
+
+  useEffect(() => {
+    setVisibleChars(STEP);
+  }, [post._id]);
+
+  const total = post.content?.length || 0;
+  const isLong = total > visibleChars;
+  const displayText = post.content?.slice(0, visibleChars) || '';
+
+  const handleRepostOptions = () => {
+    Alert.alert('Repost', 'Choose an option', [
+      { text: 'Repost with Thought', onPress: () => onRepostWithThought(rootId) },
+      { text: 'Repost', onPress: () => onQuickRepost(rootId) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   return (
     <View className="border-b border-slate-100 py-4">
-      <View className="flex-row gap-3">
-        <View className="w-10 items-center">
-          {post.user?.photo ? (
-            <Image source={{ uri: post.user.photo }} className="h-10 w-10 rounded-full" />
-          ) : (
-            <View className="h-10 w-10 rounded-full bg-slate-200" />
-          )}
-        </View>
+      <PostHeader
+        name={post.user?.name || 'Unknown'}
+        label={label}
+        photoUri={post.user?.photo}
+        onMenu={() => onPostMenu(post, rootId)}
+      />
 
-        <View className="flex-1">
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="font-semibold text-slate-900">{post.user?.name || 'Unknown'}</Text>
-              {label ? <Text className="text-xs text-slate-500">{label}</Text> : null}
-            </View>
-            <TouchableOpacity onPress={() => onPostMenu(post, rootId)}>
-              <Ionicons name="ellipsis-horizontal" size={18} color="#94a3b8" />
+      {displayText ? (
+        <>
+          <Text className="mt-2 text-[15px] leading-5 text-slate-900">
+            {displayText}
+            {isLong ? '...' : ''}
+          </Text>
+
+          {isLong ? (
+            <TouchableOpacity onPress={() => setVisibleChars((v) => v + STEP)}>
+              <Text className="mt-1 text-right text-xs font-semibold text-blue-600">
+                See more...
+              </Text>
             </TouchableOpacity>
-          </View>
-
-          {post.content ? (
-            <Text className="mt-2 text-[15px] leading-5 text-slate-900">{post.content}</Text>
+          ) : total > STEP ? (
+            <TouchableOpacity onPress={() => setVisibleChars(STEP)}>
+              <Text className="mt-1 text-right text-xs font-semibold text-blue-600">
+                ...See less
+              </Text>
+            </TouchableOpacity>
           ) : null}
+        </>
+      ) : null}
 
-          {post.photo ? (
-            <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
-          ) : null}
+      {post.photo ? (
+        <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
+      ) : null}
 
-          {post.repostOf ? <RepostPreview post={originalPost} /> : null}
+      {post.repostOf ? <RepostPreview post={originalPost} /> : null}
 
-          <View className="mt-3 flex-row gap-6">
-            <TouchableOpacity
-              className="flex-row items-center gap-2"
-              onPress={() => onVote(post._id, 'upvote')}>
-              <Ionicons
-                name={isUpvoted ? 'arrow-up' : 'arrow-up-outline'}
-                size={18}
-                color={isUpvoted ? '#2563eb' : '#94a3b8'}
-              />
-              <Text className="text-xs text-slate-500">{voteCounts.upvotes}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center gap-2"
-              onPress={() => onVote(post._id, 'downvote')}>
-              <Ionicons
-                name={isDownvoted ? 'arrow-down' : 'arrow-down-outline'}
-                size={18}
-                color={isDownvoted ? '#ef4444' : '#94a3b8'}
-              />
-              <Text className="text-xs text-slate-500">{voteCounts.downvotes}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center gap-2"
-              onPress={() => onOpenComments(post._id)}>
-              <Ionicons name="chatbubble-outline" size={18} color="#94a3b8" />
-              <Text className="text-xs text-slate-500">{commentCount}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center gap-2"
-              onPress={() =>
-                Alert.alert('Repost', 'Choose an option', [
-                  { text: 'Repost with Thought', onPress: () => onRepostWithThought(rootId) },
-                  { text: 'Repost', onPress: () => onQuickRepost(rootId) },
-                  { text: 'Cancel', style: 'cancel' },
-                ])
-              }>
-              <Ionicons name="repeat" size={18} color="#94a3b8" />
-              <Text className="text-xs text-slate-500">{repostCount}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <PostActions
+        isUpvoted={isUpvoted}
+        isDownvoted={isDownvoted}
+        upvotes={voteCounts.upvotes}
+        downvotes={voteCounts.downvotes}
+        commentCount={commentCount}
+        repostCount={repostCount}
+        onUpvote={() => onVote(post._id, 'upvote')}
+        onDownvote={() => onVote(post._id, 'downvote')}
+        onComments={() => onOpenComments(post._id)}
+        onRepostOptions={handleRepostOptions}
+      />
     </View>
   );
 };

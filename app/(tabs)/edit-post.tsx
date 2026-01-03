@@ -129,6 +129,9 @@ const EditPost = () => {
         className="mt-4 min-h-[140px] rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
         placeholder="Update your post..."
         multiline
+        scrollEnabled
+        textAlignVertical="top"
+        style={{ height: 160 }}
         value={content}
         onChangeText={setContent}
       />

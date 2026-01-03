@@ -92,7 +92,7 @@ const AddPost = () => {
   };
 
   return (
-    <View className="flex-1 bg-white px-6 pt-24">
+    <View className="flex-1 bg-white px-6 pt-10">
       <Text className="text-2xl font-bold text-slate-800">Create Post</Text>
       <Text className="mt-1 text-slate-500">Share something with your campus.</Text>
 
@@ -109,6 +109,9 @@ const AddPost = () => {
         className="mt-4 min-h-[120px] rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
         placeholder="Write something..."
         multiline
+        scrollEnabled
+        textAlignVertical="top"
+        style={{ height: 160 }}
         value={content}
         onChangeText={setContent}
       />
