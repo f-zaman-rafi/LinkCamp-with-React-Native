@@ -1,7 +1,7 @@
 import '../../global.css';
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { View, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import useFeedData from '../../Hooks/useFeedData';
@@ -24,6 +24,7 @@ const FeedPage = () => {
   const { user } = useAuth();
   const currentUserEmail = user?.email || '';
 
+  // Feed data and actions
   const {
     posts,
     loading,
@@ -38,6 +39,14 @@ const FeedPage = () => {
     updateRepostCount,
   } = useFeedData('/posts');
 
+  // Refresh feed when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
+
+  // Comments management
   const {
     commentsOpen,
     commentsLoading,
@@ -54,6 +63,7 @@ const FeedPage = () => {
     deleteComment,
   } = useComments({ onCountChange: updateCommentCount });
 
+  // Reports management
   const {
     commentReportOpen,
     commentReportReason,
@@ -66,6 +76,7 @@ const FeedPage = () => {
     quickPostReport,
   } = useReports();
 
+  // Repost management
   const {
     repostOpen,
     repostText,
@@ -82,6 +93,7 @@ const FeedPage = () => {
     },
   });
 
+  // Map of posts by ID for easy lookup
   const postById = useMemo(() => {
     const map: Record<string, ApiPost> = {};
     posts.forEach((p) => {
@@ -90,6 +102,7 @@ const FeedPage = () => {
     return map;
   }, [posts]);
 
+  // Delete post function
   const deletePost = async (postId: string) => {
     try {
       await axiosSecure.delete(`/posts/${postId}`);
@@ -100,6 +113,7 @@ const FeedPage = () => {
     }
   };
 
+  // Post actions
   const openPostActions = (post: ApiPost, rootId: string) => {
     const isOwner = !!post.email && post.email === currentUserEmail;
 
@@ -129,6 +143,7 @@ const FeedPage = () => {
     ]);
   };
 
+  // Comment actions
   const openCommentActions = (comment: any) => {
     const isOwner = !!comment.email && comment.email === currentUserEmail;
 
@@ -156,6 +171,7 @@ const FeedPage = () => {
     ]);
   };
 
+  // Render a single post item
   const renderPost = ({ item }: { item: ApiPost }) => {
     const counts = voteCounts[item._id] || { upvotes: 0, downvotes: 0 };
     const isUpvoted = userVotes[item._id] === 'upvote';
