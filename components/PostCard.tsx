@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import React from 'react';
+import { View, Image, Alert } from 'react-native';
 import PostHeader from './PostHeader';
 import PostActions from './PostActions';
 import RepostPreview from './ReviewPreview';
 import { ApiPost, VoteCounts, VoteType } from '../types/feed';
+import ExpandableText from './ExpandableText';
+import { postTypeLabel } from '../utils/postType';
 
 type PostCardProps = {
   post: ApiPost;
@@ -18,14 +20,6 @@ type PostCardProps = {
   onOpenComments: (postId: string) => void;
   onRepostWithThought: (rootId: string) => void;
   onQuickRepost: (rootId: string) => void;
-};
-
-const postTypeLabel = (type?: ApiPost['postType']) => {
-  if (type === 'repost') return 'Repost';
-  if (type === 'teacher') return 'Teacher Announcement';
-  if (type === 'admin') return 'Official Notice';
-  if (type === 'general') return 'General Post';
-  return '';
 };
 
 const PostCard = ({
@@ -45,17 +39,6 @@ const PostCard = ({
   const label = postTypeLabel(post.postType);
   const rootId = post.repostOf ? post.repostOf : post._id;
 
-  const STEP = 300;
-  const [visibleChars, setVisibleChars] = useState(STEP);
-
-  useEffect(() => {
-    setVisibleChars(STEP);
-  }, [post._id]);
-
-  const total = post.content?.length || 0;
-  const isLong = total > visibleChars;
-  const displayText = post.content?.slice(0, visibleChars) || '';
-
   const handleRepostOptions = () => {
     Alert.alert('Repost', 'Choose an option', [
       { text: 'Repost with Thought', onPress: () => onRepostWithThought(rootId) },
@@ -73,28 +56,12 @@ const PostCard = ({
         onMenu={() => onPostMenu(post, rootId)}
       />
 
-      {displayText ? (
-        <>
-          <Text className="mt-2 text-[15px] leading-5 text-slate-900">
-            {displayText}
-            {isLong ? '...' : ''}
-          </Text>
-
-          {isLong ? (
-            <TouchableOpacity onPress={() => setVisibleChars((v) => v + STEP)}>
-              <Text className="mt-1 text-right text-xs font-semibold text-blue-600">
-                See more...
-              </Text>
-            </TouchableOpacity>
-          ) : total > STEP ? (
-            <TouchableOpacity onPress={() => setVisibleChars(STEP)}>
-              <Text className="mt-1 text-right text-xs font-semibold text-blue-600">
-                ...See less
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-        </>
-      ) : null}
+      <ExpandableText
+        text={post.content}
+        step={300}
+        className="mt-2 text-[15px] leading-5 text-slate-900"
+        buttonClassName="mt-1 text-right text-xs font-semibold text-blue-600"
+      />
 
       {post.photo ? (
         <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />

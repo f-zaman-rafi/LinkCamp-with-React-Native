@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../firebase/firebase.config';
 import useAuth from '../../Hooks/useAuth';
+import AuthHeader from '../../components/AuthHeader';
 
 const VerifyEmail = () => {
   const router = useRouter();
@@ -50,10 +51,7 @@ const VerifyEmail = () => {
 
   return (
     <View className="flex-1 justify-center bg-white px-6">
-      <View className="mt-20 mb-4">
-        <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
-        <Text className="mt-2 text-lg text-slate-500">University Campus Platform</Text>
-      </View>
+      <AuthHeader containerClassName="mb-8" />
 
       <View className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
         <Text className="text-lg font-bold text-slate-800">Verify your email</Text>

@@ -16,6 +16,7 @@ import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { useUserContext } from '../../providers/UserContext';
 import { auth } from '../../firebase/firebase.config';
 import * as ImagePicker from 'expo-image-picker';
+import AuthHeader from '../../components/AuthHeader';
 
 type UserType = 'student' | 'teacher' | 'admin';
 type GenderType = '' | 'male' | 'female' | 'other';
@@ -194,10 +195,7 @@ const CreateProfile = () => {
   return (
     <View className="flex-1 justify-center bg-white px-6">
       {/* Header */}
-      <View className="mt-20 mb-4">
-        <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
-        <Text className="mt-2 text-lg text-slate-500">Complete your profile</Text>
-      </View>
+      <AuthHeader containerClassName="mb-8" />
 
       {/* Profile Form */}
 

@@ -1,24 +1,11 @@
 import '../../global.css';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
-
-type ApiPost = {
-  _id: string;
-  content?: string;
-  photo?: string;
-  postType?: string;
-};
+import PostEditor from '../../components/PostEditor';
+import useImagePicker from '../../Hooks/useImagePicker';
+import { ApiPost } from '../../types/feed';
 
 const EditPost = () => {
   const router = useRouter();
@@ -27,11 +14,17 @@ const EditPost = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [content, setContent] = useState('');
   const [originalPhoto, setOriginalPhoto] = useState<string | null>(null);
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
+
+  const { photoUri, setPhotoUri, pickImage } = useImagePicker({ quality: 0.85 });
+
+  useEffect(() => {
+    if (photoUri) {
+      setRemovePhoto(false);
+    }
+  }, [photoUri]);
 
   useEffect(() => {
     const loadPost = async () => {
@@ -41,6 +34,8 @@ const EditPost = () => {
         const post: ApiPost = res.data;
         setContent(post.content || '');
         setOriginalPhoto(post.photo || null);
+        setPhotoUri(null);
+        setRemovePhoto(false);
       } catch (error) {
         Alert.alert('Edit Error', 'Unable to load post.');
         router.back();
@@ -49,25 +44,7 @@ const EditPost = () => {
       }
     };
     loadPost();
-  }, [id, axiosSecure, router]);
-
-  const pickPhoto = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (!result.canceled) {
-      setPhotoUri(result.assets[0].uri);
-      setRemovePhoto(false);
-    }
-  };
-
-  const removeCurrentPhoto = () => {
-    setPhotoUri(null);
-    setRemovePhoto(true);
-  };
+  }, [id, axiosSecure, router, setPhotoUri]);
 
   const onSave = async () => {
     if (!id) return;
@@ -121,58 +98,26 @@ const EditPost = () => {
   const showPhoto = photoUri || (!removePhoto ? originalPhoto : null);
 
   return (
-    <View className="flex-1 bg-white px-6 pt-16">
-      <Text className="text-2xl font-bold text-slate-800">Edit Post</Text>
-      <Text className="mt-1 text-slate-500">Update your post content or image.</Text>
-
-      <TextInput
-        className="mt-4 min-h-[140px] rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
-        placeholder="Update your post..."
-        multiline
-        scrollEnabled
-        textAlignVertical="top"
-        style={{ height: 160 }}
-        value={content}
-        onChangeText={setContent}
-      />
-
-      {showPhoto ? (
-        <Image source={{ uri: showPhoto }} className="mt-4 h-56 w-full rounded-2xl" />
-      ) : null}
-
-      <TouchableOpacity
-        onPress={pickPhoto}
-        className="mt-4 rounded-xl border border-slate-300 px-4 py-3">
-        <Text className="text-center text-slate-600">
-          {photoUri ? 'Change Photo' : 'Add New Photo'}
-        </Text>
-      </TouchableOpacity>
-
-      {originalPhoto && !removePhoto && !photoUri ? (
-        <TouchableOpacity
-          onPress={removeCurrentPhoto}
-          className="mt-3 rounded-xl border border-red-300 px-4 py-3">
-          <Text className="text-center text-red-500">Remove Current Photo</Text>
-        </TouchableOpacity>
-      ) : null}
-
-      <View className="mt-6 flex-row gap-3">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="flex-1 rounded-xl border border-slate-300 py-3">
-          <Text className="text-center text-slate-600">Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={onSave}
-          disabled={saving}
-          className={`flex-1 rounded-xl py-3 ${saving ? 'bg-blue-300' : 'bg-blue-600'}`}>
-          <Text className="text-center font-semibold text-white">
-            {saving ? 'Saving...' : 'Save'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <PostEditor
+      title="Edit Post"
+      subtitle="Update your post content or image."
+      containerClassName="pt-16"
+      content={content}
+      onChangeContent={setContent}
+      placeholder="Update your post..."
+      photoUri={showPhoto}
+      onPickPhoto={pickImage}
+      showRemovePhoto={!!originalPhoto && !removePhoto && !photoUri}
+      onRemovePhoto={() => {
+        setPhotoUri(null);
+        setRemovePhoto(true);
+      }}
+      primaryLabel="Save"
+      primaryLoading={saving}
+      onPrimaryPress={onSave}
+      secondaryLabel="Cancel"
+      onSecondaryPress={() => router.back()}
+    />
   );
 };
 

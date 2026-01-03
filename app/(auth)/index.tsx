@@ -6,6 +6,7 @@ import useAuth from '../../Hooks/useAuth';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserContext } from '../../providers/UserContext'; // Importing the user context
+import AuthHeader from '../../components/AuthHeader';
 
 const LoginScreen = () => {
   const router = useRouter(); // Navigation
@@ -89,10 +90,7 @@ const LoginScreen = () => {
   return (
     <View className="flex-1 justify-center bg-white px-6">
       {/*  Header */}
-      <View className="mb-8">
-        <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
-        <Text className="mt-2 text-lg text-slate-500">University Campus Platform</Text>
-      </View>
+      <AuthHeader containerClassName="mb-8" />
       {/*  Login Form */}
       <View>
         {/*  Email Field */}

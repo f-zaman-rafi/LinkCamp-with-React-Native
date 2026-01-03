@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Comment } from '../types/feed';
+import Avatar from './Avatar';
 
 type CommentsModalProps = {
   visible: boolean;
@@ -70,11 +71,7 @@ const CommentsModal = ({
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <View className="mt-4 flex-row gap-3">
-                {item.user?.photo ? (
-                  <Image source={{ uri: item.user.photo }} className="h-8 w-8 rounded-full" />
-                ) : (
-                  <View className="h-8 w-8 rounded-full bg-slate-200" />
-                )}
+                <Avatar uri={item.user?.photo} size={32} />
                 <View className="flex-1">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-sm font-semibold text-slate-800">

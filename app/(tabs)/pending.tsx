@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import useUser from '../../Hooks/useUser';
 import useAuth from '../../Hooks/useAuth';
 import { useUserContext } from '../../providers/UserContext';
 

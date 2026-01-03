@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } fro
 import { useRouter } from 'expo-router';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebase/firebase.config';
+import AuthHeader from '../../components/AuthHeader';
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -30,10 +31,8 @@ const ForgotPassword = () => {
 
   return (
     <View className="flex-1 justify-center bg-white px-6">
-      <View className="mt-20 mb-4">
-        <Text className="text-4xl font-extrabold text-blue-600">LinkCamp</Text>
-        <Text className="mt-2 text-lg text-slate-500">University Campus Platform</Text>
-      </View>
+      <AuthHeader containerClassName="mb-8" />
+
       <Text className="mt-2 text-slate-500">
         Enter your email to receive a password reset link.
       </Text>
