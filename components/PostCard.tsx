@@ -57,31 +57,33 @@ const PostCard = ({
         onMenu={() => onPostMenu(post, rootId)}
       />
 
-      <ExpandableText
-        text={post.content}
-        step={300}
-        className="mt-2 text-[15px] leading-5 text-slate-900"
-        buttonClassName="mt-1 text-right text-xs font-semibold text-blue-600"
-      />
+      <View className="ml-14.5">
+        <ExpandableText
+          text={post.content}
+          step={300}
+          className="mt-2 text-[15px] leading-5 text-slate-900"
+          buttonClassName="mt-1 text-right text-xs font-semibold text-blue-600"
+        />
 
-      {post.photo ? (
-        <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
-      ) : null}
+        {post.photo ? (
+          <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
+        ) : null}
 
-      {post.repostOf ? <RepostPreview post={originalPost} /> : null}
+        {post.repostOf ? <RepostPreview post={originalPost} /> : null}
 
-      <PostActions
-        isUpvoted={isUpvoted}
-        isDownvoted={isDownvoted}
-        upvotes={voteCounts.upvotes}
-        downvotes={voteCounts.downvotes}
-        commentCount={commentCount}
-        repostCount={repostCount}
-        onUpvote={() => onVote(post._id, 'upvote')}
-        onDownvote={() => onVote(post._id, 'downvote')}
-        onComments={() => onOpenComments(post._id)}
-        onRepostOptions={handleRepostOptions}
-      />
+        <PostActions
+          isUpvoted={isUpvoted}
+          isDownvoted={isDownvoted}
+          upvotes={voteCounts.upvotes}
+          downvotes={voteCounts.downvotes}
+          commentCount={commentCount}
+          repostCount={repostCount}
+          onUpvote={() => onVote(post._id, 'upvote')}
+          onDownvote={() => onVote(post._id, 'downvote')}
+          onComments={() => onOpenComments(post._id)}
+          onRepostOptions={handleRepostOptions}
+        />
+      </View>
     </View>
   );
 };
