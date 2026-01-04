@@ -4,6 +4,7 @@ import AuthProvider from '../providers/AuthProviders';
 import useAuth from '../Hooks/useAuth';
 import { ActivityIndicator, View } from 'react-native';
 import { UserProvider, useUserContext } from '../providers/UserContext';
+import { ThemeProvider } from '../providers/ThemeProvider';
 
 const AuthStack = () => {
   const segments = useSegments() as string[];
@@ -51,13 +52,13 @@ const AuthStack = () => {
 
 const RootLayout = () => {
   return (
-    // Global authentication provider (Firebase auth state)
-    <AuthProvider>
-      {/* Global user metadata provider (role, verify status, profile info) */}
-      <UserProvider>
-        <AuthStack />
-      </UserProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <UserProvider>
+          <AuthStack />
+        </UserProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
