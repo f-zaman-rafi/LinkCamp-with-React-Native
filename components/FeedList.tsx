@@ -8,6 +8,7 @@ type FeedListProps<T> = {
   refreshing: boolean;
   onRefresh: () => void;
   listEmptyComponent?: React.ReactElement;
+  listRef?: React.RefObject<FlatList<T>>;
 };
 
 const FeedList = <T,>({
@@ -17,9 +18,11 @@ const FeedList = <T,>({
   refreshing,
   onRefresh,
   listEmptyComponent,
+  listRef,
 }: FeedListProps<T>) => {
   return (
     <FlatList
+      ref={listRef}
       data={data}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
@@ -27,6 +30,8 @@ const FeedList = <T,>({
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListEmptyComponent={listEmptyComponent}
+      contentContainerStyle={{ flexGrow: 1 }}
+      contentInsetAdjustmentBehavior="never"
     />
   );
 };

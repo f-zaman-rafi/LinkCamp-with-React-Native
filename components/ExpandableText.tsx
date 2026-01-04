@@ -6,60 +6,44 @@ type ExpandableTextProps = {
   step?: number;
   className?: string;
   buttonClassName?: string;
-  initialExpanded?: boolean;
-  expanded?: boolean;
-  onToggle?: (expanded: boolean) => void;
 };
 
 const ExpandableText = ({
   text = '',
-  step = 300,
+  step = 250,
   className = 'text-[15px] leading-5 text-slate-900',
   buttonClassName = 'mt-1 text-right text-xs font-semibold text-blue-600',
-  initialExpanded = false,
-  expanded,
-  onToggle,
 }: ExpandableTextProps) => {
   const [visibleChars, setVisibleChars] = useState(step);
-  const [localExpanded, setLocalExpanded] = useState(initialExpanded);
-
-  const isControlled = typeof expanded === 'boolean';
-  const isExpanded = isControlled ? expanded : localExpanded;
 
   useEffect(() => {
-    setVisibleChars(isExpanded ? text?.length || 0 : step);
-  }, [isExpanded, step, text]);
-
-  useEffect(() => {
-    if (!text) {
-      setVisibleChars(step);
-      if (!isControlled) setLocalExpanded(false);
-    }
-  }, [text, step, isControlled]);
+    setVisibleChars(step);
+  }, [text, step]);
 
   if (!text) return null;
 
   const total = text.length;
-  const isLong = total > step;
-  const displayText = isExpanded ? text : text.slice(0, visibleChars);
-  const showToggle = isLong;
+  const displayText = text.slice(0, visibleChars);
+  const canExpand = visibleChars < total;
 
-  const toggle = () => {
-    const next = !isExpanded;
-    if (!isControlled) setLocalExpanded(next);
-    onToggle?.(next);
+  const handleToggle = () => {
+    if (canExpand) {
+      setVisibleChars((prev) => Math.min(prev + step, total));
+    } else if (total > step) {
+      setVisibleChars(step);
+    }
   };
 
   return (
     <View>
       <Text className={className}>
         {displayText}
-        {!isExpanded && isLong ? '...' : ''}
+        {canExpand ? '...' : ''}
       </Text>
 
-      {showToggle ? (
-        <TouchableOpacity onPress={toggle}>
-          <Text className={buttonClassName}>{isExpanded ? '...See less' : 'See more...'}</Text>
+      {total > step ? (
+        <TouchableOpacity onPress={handleToggle}>
+          <Text className={buttonClassName}>{canExpand ? 'See more...' : '...See less'}</Text>
         </TouchableOpacity>
       ) : null}
     </View>

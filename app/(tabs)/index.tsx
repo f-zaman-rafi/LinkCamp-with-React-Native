@@ -1,14 +1,13 @@
 import '../../global.css';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useRef } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { View, Alert } from 'react-native';
+import { View, Alert, FlatList } from 'react-native';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
-import useRepost from '../../Hooks/useRepost';
-
+import useRepostPreview from '../../Hooks/useRepostPreview';
 import FeedList from '../../components/FeedList';
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
@@ -23,6 +22,7 @@ const FeedPage = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const currentUserEmail = user?.email || '';
+  const listRef = useRef<FlatList<ApiPost>>(null);
 
   // Feed data and actions
   const {
@@ -37,13 +37,15 @@ const FeedPage = () => {
     handleVote,
     updateCommentCount,
     updateRepostCount,
+    reload,
   } = useFeedData('/posts');
 
   // Refresh feed when screen is focused
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh])
+      listRef.current?.scrollToOffset({ offset: 0, animated: false });
+      reload(); // silent update when coming back
+    }, [reload])
   );
 
   // Comments management
@@ -76,23 +78,6 @@ const FeedPage = () => {
     quickPostReport,
   } = useReports();
 
-  // Repost management
-  const {
-    repostOpen,
-    repostText,
-    setRepostText,
-    repostLoading,
-    openRepost,
-    closeRepost,
-    submitRepost,
-    quickRepost,
-  } = useRepost({
-    onSuccess: (postId) => {
-      updateRepostCount(postId, 1);
-      refresh();
-    },
-  });
-
   // Map of posts by ID for easy lookup
   const postById = useMemo(() => {
     const map: Record<string, ApiPost> = {};
@@ -101,6 +86,25 @@ const FeedPage = () => {
     });
     return map;
   }, [posts]);
+
+  // Repost management
+  const {
+    repostOpen,
+    repostText,
+    setRepostText,
+    repostLoading,
+    submitRepost,
+    quickRepost,
+    openRepostWithPreview,
+    closeRepostWithPreview,
+    repostPreview,
+  } = useRepostPreview({
+    postById,
+    onSuccess: (postId) => {
+      updateRepostCount(postId, 1);
+      refresh();
+    },
+  });
 
   // Delete post function
   const deletePost = async (postId: string) => {
@@ -192,7 +196,7 @@ const FeedPage = () => {
         onPostMenu={openPostActions}
         onVote={handleVote}
         onOpenComments={openComments}
-        onRepostWithThought={openRepost}
+        onRepostWithThought={openRepostWithPreview}
         onQuickRepost={quickRepost}
       />
     );
@@ -205,6 +209,7 @@ const FeedPage = () => {
   return (
     <View className="flex-1 bg-white px-4 pt-2">
       <FeedList
+        listRef={listRef}
         data={posts}
         keyExtractor={(item) => item._id}
         renderItem={renderPost}
@@ -242,9 +247,10 @@ const FeedPage = () => {
         visible={repostOpen}
         thought={repostText}
         onChangeThought={setRepostText}
-        onClose={closeRepost}
+        onClose={closeRepostWithPreview}
         onSubmit={submitRepost}
         loading={repostLoading}
+        previewPost={repostPreview}
       />
     </View>
   );

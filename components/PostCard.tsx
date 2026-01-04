@@ -59,8 +59,8 @@ const PostCard = ({
 
       <View className="ml-14.5">
         <ExpandableText
-          text={post.content}
-          step={300}
+          text={post.content?.slice(0, 2000)}
+          step={250}
           className="mt-2 text-[15px] leading-5 text-slate-900"
           buttonClassName="mt-1 text-right text-xs font-semibold text-blue-600"
         />

@@ -151,6 +151,10 @@ const useFeedData = (endpoint: string = '/posts') => {
     [axiosSecure, fetchFeed, userVotes]
   );
 
+  const reload = useCallback(() => {
+    fetchFeed(false); // silent fetch, no refresh spinner
+  }, [fetchFeed]);
+
   return {
     posts,
     loading,
@@ -163,6 +167,7 @@ const useFeedData = (endpoint: string = '/posts') => {
     handleVote,
     updateCommentCount,
     updateRepostCount,
+    reload,
   };
 };
 
