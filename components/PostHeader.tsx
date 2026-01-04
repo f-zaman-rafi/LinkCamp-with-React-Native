@@ -2,21 +2,23 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Avatar from './Avatar';
+import UserName from './UserName';
 
 type PostHeaderProps = {
   name: string;
   label?: string;
   photoUri?: string;
+  role?: string;
   onMenu: () => void;
 };
 
-const PostHeader = ({ name, label, photoUri, onMenu }: PostHeaderProps) => {
+const PostHeader = ({ name, label, photoUri, role, onMenu }: PostHeaderProps) => {
   return (
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-3">
         <Avatar uri={photoUri} size={40} />
         <View>
-          <Text className="font-semibold text-slate-900">{name}</Text>
+          <UserName name={name} role={role} />
           {label ? <Text className="text-xs text-slate-500">{label}</Text> : null}
         </View>
       </View>

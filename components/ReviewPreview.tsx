@@ -4,6 +4,7 @@ import Avatar from './Avatar';
 import { ApiPost } from '../types/feed';
 import ExpandableText from './ExpandableText';
 import { postTypeLabel } from '../utils/postType';
+import UserName from './UserName';
 
 const RepostPreview = ({ post }: { post?: ApiPost }) => {
   if (!post) {
@@ -21,9 +22,13 @@ const RepostPreview = ({ post }: { post?: ApiPost }) => {
       <View className="flex-row items-center gap-2">
         <Avatar uri={post.user?.photo} size={24} />
         <View>
-          <Text className="text-xs font-semibold text-slate-800">
-            {post.user?.name || 'Unknown'}
-          </Text>
+          <UserName
+            name={post.user?.name}
+            role={post.user?.user_type}
+            nameClassName="text-xs font-semibold text-slate-800"
+            roleClassName="text-[10px] text-slate-500"
+          />
+
           {label ? <Text className="text-[10px] text-slate-500">{label}</Text> : null}
         </View>
       </View>

@@ -14,6 +14,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Comment } from '../types/feed';
 import Avatar from './Avatar';
+import UserName from './UserName';
+import ExpandableText from './ExpandableText';
 
 type CommentsModalProps = {
   visible: boolean;
@@ -29,6 +31,7 @@ type CommentsModalProps = {
   submitting?: boolean;
   title?: string;
 };
+const COMMENT_LIMIT = 500;
 
 const CommentsModal = ({
   visible,
@@ -61,7 +64,7 @@ const CommentsModal = ({
             <ActivityIndicator color="#2563eb" />
           </View>
         ) : comments.length === 0 ? (
-          <View className="mt-6 items-center">
+          <View className="mt-6 flex-1 items-center justify-center">
             <Text className="text-sm text-slate-500">No comments yet.</Text>
           </View>
         ) : (
@@ -74,14 +77,23 @@ const CommentsModal = ({
                 <Avatar uri={item.user?.photo} size={32} />
                 <View className="flex-1">
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-sm font-semibold text-slate-800">
-                      {item.user?.name || 'User'}
-                    </Text>
+                    <UserName
+                      name={item.user?.name}
+                      role={(item.user as any)?.user_type}
+                      nameClassName="text-sm font-semibold text-slate-800"
+                      roleClassName="text-[10px] text-slate-500"
+                    />
+
                     <TouchableOpacity onPress={() => onOpenCommentActions(item)}>
                       <Ionicons name="ellipsis-horizontal" size={16} color="#94a3b8" />
                     </TouchableOpacity>
                   </View>
-                  <Text className="text-sm text-slate-700">{item.content}</Text>
+                  <ExpandableText
+                    text={item.content?.slice(0, 500)}
+                    step={250}
+                    className="text-sm text-slate-700"
+                    buttonClassName="mt-1 text-xs font-semibold text-blue-600"
+                  />
                 </View>
               </View>
             )}
@@ -98,16 +110,24 @@ const CommentsModal = ({
           </View>
         ) : null}
 
-        <View className="mt-4 mb-12 flex-row items-center gap-2 border-t border-slate-100 pt-3">
-          <TextInput
-            className="flex-1 rounded-xl border border-slate-300 px-3 py-2"
-            placeholder={isEditing ? 'Edit your comment...' : 'Write a comment...'}
-            value={commentText}
-            onChangeText={setCommentText}
-          />
-          <TouchableOpacity onPress={onSubmit} disabled={submitting}>
-            <Ionicons name="send" size={20} color={submitting ? '#94a3b8' : '#2563eb'} />
-          </TouchableOpacity>
+        <View className="mt-4 mb-12">
+          <View className="flex-row items-center gap-2 border-t border-slate-100 pt-3">
+            <TextInput
+              className="flex-1 rounded-xl border border-slate-300 px-3 py-2"
+              placeholder={isEditing ? 'Edit your comment...' : 'Write a comment...'}
+              value={commentText}
+              onChangeText={setCommentText}
+              maxLength={COMMENT_LIMIT}
+            />
+
+            <TouchableOpacity onPress={onSubmit} disabled={submitting}>
+              <Ionicons name="send" size={20} color={submitting ? '#94a3b8' : '#2563eb'} />
+            </TouchableOpacity>
+          </View>
+          <Text
+            className={`pt-2 pl-2 text-xs ${commentText.length >= COMMENT_LIMIT ? 'text-red-500' : 'text-slate-500'}`}>
+            {commentText.length}/{COMMENT_LIMIT}
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </Modal>

@@ -53,6 +53,7 @@ const PostCard = ({
         name={post.user?.name || 'Unknown'}
         label={label}
         photoUri={post.user?.photo}
+        role={post.user?.user_type}
         onMenu={() => onPostMenu(post, rootId)}
       />
 

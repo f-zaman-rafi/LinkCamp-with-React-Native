@@ -17,6 +17,7 @@ import { useUserContext } from '../../providers/UserContext';
 import { auth } from '../../firebase/firebase.config';
 import * as ImagePicker from 'expo-image-picker';
 import AuthHeader from '../../components/AuthHeader';
+import SomeComponent from '../(tabs)/pending';
 
 type UserType = 'student' | 'teacher' | 'admin';
 type GenderType = '' | 'male' | 'female' | 'other';
@@ -195,7 +196,7 @@ const CreateProfile = () => {
   return (
     <View className="flex-1 justify-center bg-white px-6">
       {/* Header */}
-      <AuthHeader containerClassName="mb-8" />
+      <AuthHeader containerClassName="mb-8 mt-20" />
 
       {/* Profile Form */}
 
@@ -435,6 +436,7 @@ const CreateProfile = () => {
             <Text className="text-center text-lg font-bold text-white">Save Profile</Text>
           )}
         </TouchableOpacity>
+        <SomeComponent />
       </ScrollView>
     </View>
   );
