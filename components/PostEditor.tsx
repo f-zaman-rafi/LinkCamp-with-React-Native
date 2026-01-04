@@ -22,6 +22,7 @@ type PostEditorProps = {
   topSlot?: React.ReactNode;
   bottomSlot?: React.ReactNode;
 };
+const POST_LIMIT = 2000;
 
 const PostEditor = ({
   title,
@@ -98,7 +99,12 @@ const PostEditor = ({
         style={{ height: 160 }}
         value={content}
         onChangeText={onChangeContent}
+        maxLength={POST_LIMIT}
       />
+      <Text
+        className={`mt-1 px-2 pt-2 text-xs ${content.length >= POST_LIMIT ? 'text-red-500' : 'text-slate-500'}`}>
+        {content.length}/{POST_LIMIT}
+      </Text>
 
       {photoUri ? (
         <Image

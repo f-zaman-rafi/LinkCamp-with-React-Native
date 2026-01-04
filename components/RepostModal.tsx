@@ -22,6 +22,7 @@ type RepostModalProps = {
   placeholder?: string;
   submitLabel?: string;
 };
+const THOUGHT_LIMIT = 500;
 
 const RepostModal = ({
   visible,
@@ -37,7 +38,7 @@ const RepostModal = ({
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
-        className="flex-1 bg-white px-4 pt-6"
+        className="flex-1 bg-white px-4 pt-24"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View className="flex-row items-center justify-between">
           <Text className="text-lg font-semibold">{title}</Text>
@@ -52,7 +53,12 @@ const RepostModal = ({
           value={thought}
           onChangeText={onChangeThought}
           multiline
+          maxLength={THOUGHT_LIMIT}
         />
+        <Text
+          className={`px-2 pt-2 text-xs ${thought.length >= THOUGHT_LIMIT ? 'text-red-500' : 'text-slate-500'}`}>
+          {thought.length}/{THOUGHT_LIMIT}
+        </Text>
 
         <TouchableOpacity
           onPress={onSubmit}

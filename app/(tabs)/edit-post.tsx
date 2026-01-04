@@ -101,7 +101,7 @@ const EditPost = () => {
     <PostEditor
       title="Edit Post"
       subtitle="Update your post content or image."
-      containerClassName="pt-16"
+      containerClassName="pt-24"
       content={content}
       onChangeContent={setContent}
       placeholder="Update your post..."
