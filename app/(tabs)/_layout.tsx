@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Image } from 'react-native';
+import { Image, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const logo = require('../../assets/logo_linkcamp.png');
@@ -9,19 +9,11 @@ const TabLayout = () => {
   return (
     <Tabs
       screenOptions={{
-        tabBarShowLabel: false,
-        tabBarStyle: { paddingTop: 6, height: 70 },
         headerShown: true,
+        headerTitleAlign: 'center',
+        headerStyle: { height: 110 },
         headerTitle: () => (
-          <Image
-            source={logo}
-            style={{
-              width: 120,
-              height: 80,
-              marginTop: 20,
-              resizeMode: 'contain',
-            }}
-          />
+          <Image source={logo} style={{ width: 70, height: 70, resizeMode: 'contain' }} />
         ),
         headerShadowVisible: false,
       }}>
@@ -29,8 +21,12 @@ const TabLayout = () => {
         name="index"
         options={{
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          headerLeft: () => (
+            <Text className="ml-4 text-3xl font-extrabold text-[#0B1F3A]">Feed</Text>
+          ),
         }}
       />
+
       <Tabs.Screen
         name="announcement"
         options={{
