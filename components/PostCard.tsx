@@ -48,7 +48,7 @@ const PostCard = ({
   };
 
   return (
-    <View className="border-b border-slate-100 py-4">
+    <View className="border-b-2 border-dashed border-slate-200 py-4">
       <PostHeader
         name={post.user?.name || 'Unknown'}
         label={label}

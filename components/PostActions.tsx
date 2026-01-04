@@ -28,7 +28,7 @@ const PostActions = ({
   onRepostOptions,
 }: PostActionsProps) => {
   return (
-    <View className="mt-3 flex-row gap-3">
+    <View className="my-4 flex-row gap-3">
       <TouchableOpacity className="flex-row items-center gap-0.5" onPress={onUpvote}>
         <MaterialCommunityIcons
           name={isUpvoted ? 'triangle' : 'triangle-outline'}
