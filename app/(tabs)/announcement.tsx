@@ -8,11 +8,9 @@ import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
 import useRepostPreview from '../../Hooks/useRepostPreview';
-
 import FeedList from '../../components/FeedList';
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
-import ReportModal from '../../components/ReportModal';
 import RepostModal from '../../components/RepostModal';
 import LoadingState from '../../components/LoadingState';
 import EmptyState from '../../components/EmptyState';
@@ -63,17 +61,7 @@ const TeacherFeed = () => {
     deleteComment,
   } = useComments({ onCountChange: updateCommentCount });
 
-  const {
-    commentReportOpen,
-    commentReportReason,
-    setCommentReportReason,
-    commentReportLoading,
-    openCommentReport,
-    closeCommentReport,
-    submitCommentReport,
-    quickCommentReport,
-    quickPostReport,
-  } = useReports();
+  const { quickCommentReport, quickPostReport } = useReports();
 
   const postById = useMemo(() => {
     const map: Record<string, ApiPost> = {};
@@ -164,7 +152,6 @@ const TeacherFeed = () => {
 
     Alert.alert('Comment Options', 'Choose an action', [
       { text: 'Report', onPress: () => quickCommentReport(comment._id) },
-      { text: 'Report with Details', onPress: () => openCommentReport(comment._id) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   };
@@ -228,17 +215,6 @@ const TeacherFeed = () => {
         isEditing={!!editingCommentId}
         onCancelEdit={cancelEditComment}
         submitting={commentSubmitting}
-      />
-
-      <ReportModal
-        visible={commentReportOpen}
-        title="Report Comment"
-        description="Tell us why you are reporting this comment."
-        reason={commentReportReason}
-        onChangeReason={setCommentReportReason}
-        onClose={closeCommentReport}
-        onSubmit={submitCommentReport}
-        loading={commentReportLoading}
       />
 
       <RepostModal

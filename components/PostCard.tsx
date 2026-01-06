@@ -6,7 +6,6 @@ import RepostPreview from './ReviewPreview';
 import { ApiPost, VoteCounts, VoteType } from '../types/feed';
 import ExpandableText from './ExpandableText';
 import { postTypeLabel } from '../utils/postType';
-import { useTheme } from '../providers/ThemeProvider';
 
 type PostCardProps = {
   post: ApiPost;
@@ -37,7 +36,6 @@ const PostCard = ({
   onRepostWithThought,
   onQuickRepost,
 }: PostCardProps) => {
-  const { theme } = useTheme();
   const label = postTypeLabel(post.postType);
   const rootId = post.repostOf ? post.repostOf : post._id;
 
@@ -50,7 +48,7 @@ const PostCard = ({
   };
 
   return (
-    <View className="border-b-2 border-dashed py-4" style={{ borderColor: theme.colors.border }}>
+    <View className="border-b-2 border-dashed border-slate-200 py-4">
       <PostHeader
         name={post.user?.name || 'Unknown'}
         label={label}
@@ -63,10 +61,8 @@ const PostCard = ({
         <ExpandableText
           text={post.content?.slice(0, 2000)}
           step={250}
-          className="mt-2 text-[15px] leading-5"
-          buttonClassName="mt-1 text-right text-xs font-semibold"
-          textStyle={{ color: theme.colors.text }}
-          buttonStyle={{ color: theme.colors.primary }}
+          className="mt-2 text-[15px] leading-5 text-slate-900"
+          buttonClassName="mt-1 text-right text-xs font-semibold text-blue-600"
         />
 
         {post.photo ? (
