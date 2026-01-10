@@ -19,6 +19,7 @@ const LoginScreen = () => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: { email: '', password: '' },
@@ -61,11 +62,14 @@ const LoginScreen = () => {
 
       // Save user data
       setUserData({
-        name: user.name,
-        userType: user.userType,
+        name: user.name || '',
+        userType: user.userType || null,
         user_id: user.user_id || '',
         department: user.department || '',
+        session: user.session || '',
+        gender: user.gender || '',
         photo: user.photo || '',
+        verify: user.verify || '',
       });
 
       // Mark profile as checked
@@ -156,6 +160,15 @@ const LoginScreen = () => {
             <Text className="mt-1 text-xs text-red-500">{errors.password.message}</Text>
           )}
         </View>
+
+        <TouchableOpacity
+          className="mb-3 rounded-xl border border-slate-300 py-2"
+          onPress={() => {
+            setValue('email', 'gollarafi@gmail.com');
+            setValue('password', '12q!@Q');
+          }}>
+          <Text className="text-center text-slate-600">Use Dev Credentials</Text>
+        </TouchableOpacity>
 
         <View className="mr-2 mb-6 flex-row justify-end">
           <Text className="text-center text-slate-500">

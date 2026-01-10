@@ -64,7 +64,7 @@ const TabLayout = () => {
       />
 
       <Tabs.Screen
-        name="pending"
+        name="profile"
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
