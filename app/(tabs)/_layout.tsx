@@ -31,7 +31,7 @@ const TabLayout = () => {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
-          headerTitle: () => <Text className="text-2xl font-extrabold text-[#0B1F3A]">Feed</Text>,
+          headerTitle: () => <Text className="text-2xl font-extrabold text-[#292524]">Feed</Text>,
         }}
       />
 
@@ -41,7 +41,7 @@ const TabLayout = () => {
           tabBarLabel: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="school" size={size} color={color} />,
           headerTitle: () => (
-            <Text className="text-xl font-extrabold text-[#0B1F3A]">Announcements</Text>
+            <Text className="text-xl font-extrabold text-[#292524]">Announcements</Text>
           ),
         }}
       />
@@ -51,7 +51,7 @@ const TabLayout = () => {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />,
-          headerTitle: () => <Text className="text-2xl font-extrabold text-[#0B1F3A]">Create</Text>,
+          headerTitle: () => <Text className="text-2xl font-extrabold text-[#292524]">Create</Text>,
         }}
       />
 
@@ -63,7 +63,7 @@ const TabLayout = () => {
             <Ionicons name="shield-checkmark" size={size} color={color} />
           ),
           headerTitle: () => (
-            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Noticeboard</Text>
+            <Text className="text-2xl font-extrabold text-[#292524]">Noticeboard</Text>
           ),
         }}
       />
@@ -74,7 +74,7 @@ const TabLayout = () => {
           tabBarLabel: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
           headerTitle: () => (
-            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Profile</Text>
+            <Text className="text-2xl font-extrabold text-[#292524]">Profile</Text>
           ),
         }}
       />

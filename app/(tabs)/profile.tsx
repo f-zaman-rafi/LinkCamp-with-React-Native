@@ -29,17 +29,11 @@ import Avatar from '../../components/Avatar';
 import UserName from '../../components/UserName';
 import { ApiPost } from '../../types/feed';
 
-type EmptyStateProps = {
-  title?: string;
-  subtitle?: string;
-};
-
 const ProfilePage = () => {
   const router = useRouter();
   const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
-  const { userData, setUserData } = useUserContext();
-
+  const { user, logOut, loading: authLoading } = useAuth();
+  const { userData, setUserData, setProfileChecked } = useUserContext();
   const email = user?.email || '';
   const listRef = useRef<FlatList<ApiPost>>(null);
 
@@ -89,6 +83,17 @@ const ProfilePage = () => {
       setProfileLoading(false);
     }
   }, [axiosSecure, email, setUserData]);
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      setUserData(null);
+      setProfileChecked(false);
+      router.replace('/(auth)');
+    } catch (e) {
+      console.error('Logout failed:', e);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -306,11 +311,24 @@ const ProfilePage = () => {
         ) : null}
       </View>
 
-      <TouchableOpacity
-        className="mt-4 rounded-xl border border-blue-600 py-3"
-        onPress={() => router.push('/(tabs)/update-profile')}>
-        <Text className="text-center font-semibold text-blue-600">Edit Profile</Text>
-      </TouchableOpacity>
+      <View className="mt-4 flex-row-reverse gap-3">
+        <TouchableOpacity
+          className="flex-1 rounded-xl bg-red-600 py-3"
+          onPress={() => router.push('/(tabs)/update-profile')}>
+          <Text className="text-center font-semibold text-white">Edit Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`flex-1 rounded-xl py-3 shadow-sm ${authLoading ? 'bg-stone-300' : 'bg-stone-800'}`}
+          onPress={handleLogout}
+          disabled={authLoading}>
+          {authLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-center font-semibold text-white">Log Out</Text>
+          )}
+        </TouchableOpacity>
+      </View>
 
       <Text className="mt-6 text-lg font-bold text-slate-900">Posts</Text>
     </View>

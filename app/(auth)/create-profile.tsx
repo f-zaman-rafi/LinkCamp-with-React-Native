@@ -97,7 +97,7 @@ const CreateProfile = () => {
 
   return (
     <View className="flex-1 justify-center bg-white px-6">
-      <AuthHeader containerClassName="mb-8 mt-20" />
+      <AuthHeader containerClassName="mb-4 mt-20" />
 
       <ProfileForm
         requirePhoto

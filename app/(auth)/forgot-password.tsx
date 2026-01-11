@@ -47,7 +47,7 @@ const ForgotPassword = () => {
       />
 
       <TouchableOpacity
-        className={`mt-6 rounded-xl py-4 ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
+        className={`mt-6 rounded-xl py-4 ${loading ? 'bg-blue-300' : 'bg-red-600'}`}
         onPress={handleReset}
         disabled={loading}>
         {loading ? (

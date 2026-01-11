@@ -10,7 +10,7 @@ const VerifyEmail = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const { logOut } = useAuth();
+  const { logOut, user } = useAuth();
 
   const handleResend = async () => {
     try {
@@ -52,18 +52,21 @@ const VerifyEmail = () => {
   return (
     <View className="flex-1 justify-center bg-white px-6">
       <AuthHeader containerClassName="mb-8" />
-
       <View className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <Text className="text-lg font-bold text-slate-800">Verify your email</Text>
+        <View className="flex-row items-center gap-1">
+          <Text className="text-lg font-bold text-slate-800">Verify your email</Text>
+          <Text className="text-sm font-normal text-red-600">({user?.email || 'your email'})</Text>
+        </View>
+
         <Text className="mt-2 text-slate-600">
-          We sent a verification link to your email. Please verify your account to continue setting
+          We sent a verification link to your email . Please verify your account to continue setting
           up your profile.
         </Text>
       </View>
 
-      <View className="mt-6">
+      <View className="mt-6 flex-row-reverse gap-3">
         <TouchableOpacity
-          className={`w-full rounded-xl py-4 shadow-sm ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
+          className={`flex-1 rounded-xl py-4 shadow-sm ${loading ? 'bg-red-300' : 'bg-red-600'}`}
           onPress={handleCheckVerified}
           disabled={loading}>
           {loading ? (
@@ -74,13 +77,13 @@ const VerifyEmail = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className={`mt-4 w-full rounded-xl py-4 shadow-sm ${resending ? 'bg-slate-300' : 'bg-slate-200'}`}
+          className={`flex-1 rounded-xl py-4 shadow-sm ${resending ? 'bg-stone-300' : 'bg-stone-800'}`}
           onPress={handleResend}
           disabled={resending}>
           {resending ? (
             <ActivityIndicator color="black" />
           ) : (
-            <Text className="text-center text-lg font-bold text-slate-700">Resend email</Text>
+            <Text className="text-center text-lg font-bold text-white">Resend email</Text>
           )}
         </TouchableOpacity>
       </View>

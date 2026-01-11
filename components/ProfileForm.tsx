@@ -148,7 +148,7 @@ const ProfileForm = ({
 
   return (
     <ScrollView
-      className="mt-8"
+      className=""
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}>
       {photoUri ? (
@@ -373,7 +373,7 @@ const ProfileForm = ({
       {secondaryLabel && onSecondaryPress ? (
         <View className="mt-4 mb-14 flex-row-reverse gap-3">
           <TouchableOpacity
-            className={`flex-1 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+            className={`flex-1 rounded-xl bg-red-600 py-4 ${loading ? 'opacity-50' : ''}`}
             onPress={handleSubmit(submitHandler, onError)}
             disabled={loading}>
             {loading ? (
@@ -384,15 +384,15 @@ const ProfileForm = ({
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-1 rounded-xl border border-red-500 py-4"
+            className="flex-1 rounded-xl bg-stone-800 py-4"
             onPress={onSecondaryPress}
             disabled={secondaryDisabled}>
-            <Text className="text-center text-lg font-bold text-red-500">{secondaryLabel}</Text>
+            <Text className="text-center text-lg font-bold text-white">{secondaryLabel}</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <TouchableOpacity
-          className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+          className={`mt-4 mb-5 rounded-xl bg-red-600 py-4 ${loading ? 'opacity-50' : ''}`}
           onPress={handleSubmit(submitHandler, onError)}
           disabled={loading}>
           {loading ? (

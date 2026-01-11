@@ -51,14 +51,14 @@ const PostEditor = ({
         <View className="mt-6 flex-row gap-3">
           <TouchableOpacity
             onPress={onSecondaryPress}
-            className="flex-1 rounded-xl border border-slate-300 py-3">
-            <Text className="text-center text-slate-600">{secondaryLabel}</Text>
+            className="flex-1 rounded-xl bg-stone-800 py-3">
+            <Text className="text-center text-white">{secondaryLabel}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onPrimaryPress}
             disabled={primaryLoading}
-            className={`flex-1 rounded-xl py-3 ${primaryLoading ? 'bg-blue-300' : 'bg-blue-600'}`}>
+            className={`flex-1 rounded-xl py-3 ${primaryLoading ? 'bg-red-300' : 'bg-red-600'}`}>
             {primaryLoading ? (
               <ActivityIndicator color="white" />
             ) : (
@@ -73,7 +73,7 @@ const PostEditor = ({
       <TouchableOpacity
         onPress={onPrimaryPress}
         disabled={primaryLoading}
-        className={`mt-6 rounded-xl py-4 ${primaryLoading ? 'bg-blue-300' : 'bg-blue-600'}`}>
+        className={`mt-6 rounded-xl py-4 ${primaryLoading ? 'bg-red-300' : 'bg-red-600'}`}>
         {primaryLoading ? (
           <ActivityIndicator color="white" />
         ) : (
@@ -91,7 +91,7 @@ const PostEditor = ({
       {topSlot}
 
       <TextInput
-        className="mt-4 min-h-[120px] rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
+        className="mt-4 min-h-30 rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
         placeholder={placeholder}
         multiline
         scrollEnabled

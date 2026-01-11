@@ -15,7 +15,6 @@ const LoginScreen = () => {
   const { setUserData, setProfileChecked } = useUserContext(); // User context
   const [loading, setLoading] = useState(false); // Loading state
   const [showPassword, setShowPassword] = useState(false); // Show/hide password
-
   const {
     control,
     handleSubmit,
@@ -153,7 +152,11 @@ const LoginScreen = () => {
             <TouchableOpacity
               className="absolute right-4"
               onPress={() => setShowPassword(!showPassword)}>
-              <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={22} color="#64748b" />
+              <Ionicons
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={22}
+                color={showPassword ? '#ef4444' : '#78716c'}
+              />
             </TouchableOpacity>
           </View>
           {errors.password && (
@@ -181,7 +184,7 @@ const LoginScreen = () => {
         </View>
 
         <TouchableOpacity
-          className={`w-full rounded-xl py-4 shadow-sm ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
+          className={`w-full rounded-xl py-4 shadow-sm ${loading ? 'bg-blue-300' : 'bg-red-600'}`}
           onPress={handleSubmit(onSubmit)}
           disabled={loading}>
           {loading ? (
