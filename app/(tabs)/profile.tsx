@@ -242,7 +242,7 @@ const ProfilePage = () => {
     const isDownvoted = userVotes[item._id] === 'downvote';
     const commentCount = commentCounts[item._id] ?? 0;
     const repostCount = repostCounts[item._id] ?? 0;
-    const original = item.repostOf ? postById[item.repostOf] : undefined;
+    const original = item.originalPost || (item.repostOf ? postById[item.repostOf] : undefined);
 
     return (
       <PostCard

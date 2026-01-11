@@ -8,6 +8,7 @@ export type ApiPost = {
   createdAt?: string;
   postType?: PostType;
   repostOf?: string | null;
+  originalPost?: ApiPost | null;
   user?: {
     name?: string;
     photo?: string;
