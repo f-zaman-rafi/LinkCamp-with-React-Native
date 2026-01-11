@@ -95,12 +95,6 @@ const ProfileForm = ({
 
   const selectedUserType = watch('userType');
 
-  // useEffect(() => {
-  //   setValue('Id', '');
-  //   setValue('department', '');
-  //   setValue('session', '');
-  // }, [selectedUserType, setValue]);
-
   const departments = [
     'Computer Science',
     'Electrical Engineering',

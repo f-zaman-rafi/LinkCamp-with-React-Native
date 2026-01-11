@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Image, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Image, Alert, Modal, TouchableOpacity } from 'react-native';
 import PostHeader from './PostHeader';
 import PostActions from './PostActions';
 import RepostPreview from './ReviewPreview';
 import { ApiPost, VoteCounts, VoteType } from '../types/feed';
 import ExpandableText from './ExpandableText';
 import { postTypeLabel } from '../utils/postType';
+import { Ionicons } from '@expo/vector-icons';
 
 type PostCardProps = {
   post: ApiPost;
@@ -38,7 +39,7 @@ const PostCard = ({
 }: PostCardProps) => {
   const label = postTypeLabel(post.postType);
   const rootId = post.repostOf ? post.repostOf : post._id;
-
+  const [photoOpen, setPhotoOpen] = useState(false);
   const handleRepostOptions = () => {
     Alert.alert('Repost', 'Choose an option', [
       { text: 'Repost with Thought', onPress: () => onRepostWithThought(rootId) },
@@ -66,7 +67,42 @@ const PostCard = ({
         />
 
         {post.photo ? (
-          <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
+          <>
+            <TouchableOpacity activeOpacity={0.9} onPress={() => setPhotoOpen(true)}>
+              <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
+            </TouchableOpacity>
+
+            <Modal
+              visible={photoOpen}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setPhotoOpen(false)}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(0,0,0,0.9)', // same as your profile
+                }}>
+                <TouchableOpacity
+                  onPress={() => setPhotoOpen(false)}
+                  style={{
+                    position: 'absolute',
+                    top: 50,
+                    right: 16,
+                    zIndex: 10,
+                    padding: 8,
+                  }}>
+                  <Ionicons name="close" size={44} color="#FF0000" />
+                </TouchableOpacity>
+
+                <Image
+                  source={{ uri: post.photo }}
+                  style={{ width: '92%', height: '72%', resizeMode: 'contain' }}
+                />
+              </View>
+            </Modal>
+          </>
         ) : null}
 
         {post.repostOf ? <RepostPreview post={originalPost} /> : null}

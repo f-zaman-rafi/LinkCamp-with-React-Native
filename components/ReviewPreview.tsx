@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Modal } from 'react-native';
 import Avatar from './Avatar';
 import { ApiPost } from '../types/feed';
 import ExpandableText from './ExpandableText';
 import { postTypeLabel } from '../utils/postType';
 import UserName from './UserName';
+import { Ionicons } from '@expo/vector-icons';
 
 const RepostPreview = ({ post }: { post?: ApiPost }) => {
+  const [photoOpen, setPhotoOpen] = useState(false);
   if (!post) {
     return (
       <View className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-2">
@@ -14,7 +16,6 @@ const RepostPreview = ({ post }: { post?: ApiPost }) => {
       </View>
     );
   }
-
   const label = postTypeLabel(post.postType);
 
   return (
@@ -41,7 +42,42 @@ const RepostPreview = ({ post }: { post?: ApiPost }) => {
       />
 
       {post.photo ? (
-        <Image source={{ uri: post.photo }} className="mt-2 h-40 w-full rounded-lg" />
+        <>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => setPhotoOpen(true)}>
+            <Image source={{ uri: post.photo }} className="mt-3 h-56 w-full rounded-2xl" />
+          </TouchableOpacity>
+
+          <Modal
+            visible={photoOpen}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setPhotoOpen(false)}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.9)', // same as your profile
+              }}>
+              <TouchableOpacity
+                onPress={() => setPhotoOpen(false)}
+                style={{
+                  position: 'absolute',
+                  top: 50,
+                  right: 16,
+                  zIndex: 10,
+                  padding: 8,
+                }}>
+                <Ionicons name="close" size={44} color="#FF0000" />
+              </TouchableOpacity>
+
+              <Image
+                source={{ uri: post.photo }}
+                style={{ width: '92%', height: '72%', resizeMode: 'contain' }}
+              />
+            </View>
+          </Modal>
+        </>
       ) : null}
     </View>
   );

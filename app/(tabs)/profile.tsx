@@ -369,7 +369,7 @@ const ProfilePage = () => {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.8)',
+            backgroundColor: 'rgba(0,0,0,0.9)',
           }}>
           <TouchableOpacity
             onPress={() => setPhotoOpen(false)}
@@ -380,7 +380,7 @@ const ProfilePage = () => {
               zIndex: 10,
               padding: 8,
             }}>
-            <Ionicons name="close" size={28} color="#ffffff" />
+            <Ionicons name="close" size={44} color="#FF0000" />
           </TouchableOpacity>
 
           {userData?.photo ? (
