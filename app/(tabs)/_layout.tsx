@@ -10,6 +10,11 @@ const TabLayout = () => {
     <Tabs
       screenOptions={{
         headerShown: true,
+        tabBarActiveTintColor: '#0B1F3A',
+        tabBarInactiveTintColor: '#94a3b8',
+        headerTintColor: '#0B1F3A',
+        headerTitleStyle: { color: '#0B1F3A', fontWeight: '800', fontSize: 20 },
+
         headerTitleAlign: 'center',
         tabBarStyle: { height: 70, paddingBottom: 5, paddingTop: 5 },
         headerStyle: { height: 110 },
@@ -73,7 +78,14 @@ const TabLayout = () => {
           ),
         }}
       />
-
+      <Tabs.Screen
+        name="update-profile"
+        options={{
+          href: null,
+          headerShown: true,
+          headerTitle: 'Edit Profile',
+        }}
+      />
       <Tabs.Screen name="edit-post" options={{ href: null, headerShown: false }} />
     </Tabs>
   );

@@ -6,12 +6,14 @@ import { useUserContext } from '../../providers/UserContext';
 import { auth } from '../../firebase/firebase.config';
 import AuthHeader from '../../components/AuthHeader';
 import ProfileForm, { ProfileFormData } from '../../components/ProfileForm';
+import useAuth from '../../Hooks/useAuth';
 
 const CreateProfile = () => {
   const router = useRouter();
   const axiosCommon = useAxiosCommon();
   const { setUserData, setProfileChecked } = useUserContext();
   const [loading, setLoading] = useState(false);
+  const { logOut } = useAuth();
 
   const onSubmit = async (data: ProfileFormData, photoUri: string | null) => {
     setLoading(true);
@@ -86,11 +88,25 @@ const CreateProfile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await logOut();
+    setUserData(null);
+    setProfileChecked(false);
+    router.replace('/(auth)');
+  };
+
   return (
     <View className="flex-1 justify-center bg-white px-6">
       <AuthHeader containerClassName="mb-8 mt-20" />
 
-      <ProfileForm requirePhoto loading={loading} submitLabel="Save Profile" onSubmit={onSubmit} />
+      <ProfileForm
+        requirePhoto
+        loading={loading}
+        submitLabel="Save Profile"
+        onSubmit={onSubmit}
+        secondaryLabel="Setup Later (Logout)"
+        onSecondaryPress={handleLogout}
+      />
     </View>
   );
 };

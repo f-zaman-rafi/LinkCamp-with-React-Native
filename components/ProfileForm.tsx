@@ -33,6 +33,9 @@ type ProfileFormProps = {
   loading?: boolean;
   submitLabel?: string;
   onSubmit: (data: ProfileFormData, photoUri: string | null) => void;
+  secondaryLabel?: string;
+  onSecondaryPress?: () => void;
+  secondaryDisabled?: boolean;
 };
 
 const ProfileForm = ({
@@ -42,6 +45,9 @@ const ProfileForm = ({
   loading = false,
   submitLabel = 'Save',
   onSubmit,
+  secondaryLabel,
+  onSecondaryPress,
+  secondaryDisabled,
 }: ProfileFormProps) => {
   const [photoUri, setPhotoUri] = useState<string | null>(initialPhotoUri);
 
@@ -89,11 +95,11 @@ const ProfileForm = ({
 
   const selectedUserType = watch('userType');
 
-  useEffect(() => {
-    setValue('Id', '');
-    setValue('department', '');
-    setValue('session', '');
-  }, [selectedUserType, setValue]);
+  // useEffect(() => {
+  //   setValue('Id', '');
+  //   setValue('department', '');
+  //   setValue('session', '');
+  // }, [selectedUserType, setValue]);
 
   const departments = [
     'Computer Science',
@@ -148,7 +154,7 @@ const ProfileForm = ({
 
   return (
     <ScrollView
-      className="mt-8 mb-12"
+      className="mt-8"
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}>
       {photoUri ? (
@@ -256,10 +262,21 @@ const ProfileForm = ({
               {(['student', 'teacher', 'admin'] as UserType[]).map((type) => (
                 <TouchableOpacity
                   key={type}
-                  className={`flex-1 rounded-xl border py-3 ${value === type ? 'border-blue-600 bg-blue-50' : 'border-slate-300'}`}
-                  onPress={() => onChange(type)}>
+                  className={`flex-1 rounded-xl border py-3 ${
+                    value === type ? 'border-blue-600 bg-blue-50' : 'border-slate-300'
+                  }`}
+                  onPress={() => {
+                    if (type !== value) {
+                      setValue('Id', '');
+                      setValue('department', '');
+                      setValue('session', '');
+                    }
+                    onChange(type);
+                  }}>
                   <Text
-                    className={`text-center font-bold ${value === type ? 'text-blue-600' : 'text-slate-500'}`}>
+                    className={`text-center font-bold ${
+                      value === type ? 'text-blue-600' : 'text-slate-500'
+                    }`}>
                     {type.toUpperCase()}
                   </Text>
                 </TouchableOpacity>
@@ -359,16 +376,38 @@ const ProfileForm = ({
         </View>
       )}
 
-      <TouchableOpacity
-        className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
-        onPress={handleSubmit(submitHandler, onError)}
-        disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
-        )}
-      </TouchableOpacity>
+      {secondaryLabel && onSecondaryPress ? (
+        <View className="mt-4 mb-14 flex-row-reverse gap-3">
+          <TouchableOpacity
+            className={`flex-1 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+            onPress={handleSubmit(submitHandler, onError)}
+            disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-1 rounded-xl border border-red-500 py-4"
+            onPress={onSecondaryPress}
+            disabled={secondaryDisabled}>
+            <Text className="text-center text-lg font-bold text-red-500">{secondaryLabel}</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+          onPress={handleSubmit(submitHandler, onError)}
+          disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
