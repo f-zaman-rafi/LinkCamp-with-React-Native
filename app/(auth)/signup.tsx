@@ -122,6 +122,7 @@ const SignUpPage = () => {
                 />
               )}
             />
+
             <TouchableOpacity
               className="absolute right-4"
               onPress={() => setShowPassword(!showPassword)}>
@@ -129,7 +130,7 @@ const SignUpPage = () => {
                 name={showPassword ? 'eye-off' : 'eye'}
                 size={22}
                 color={showPassword ? '#ef4444' : '#78716c'}
-              />{' '}
+              />
             </TouchableOpacity>
           </View>
           {errors.password && (

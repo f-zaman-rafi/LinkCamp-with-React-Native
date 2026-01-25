@@ -143,8 +143,11 @@ const useFeedData = (endpoint: string = '/posts') => {
 
       try {
         await axiosSecure.post('/votes', { postId, voteType });
-      } catch (error) {
-        Alert.alert('Vote Error', 'Could not update your vote.');
+      } catch (error: any) {
+        const code = error?.response?.data?.code;
+        if (code !== 'ACCOUNT_PENDING') {
+          Alert.alert('Vote Error', 'Could not update your vote.');
+        }
         fetchFeed(true);
       }
     },

@@ -25,7 +25,6 @@ import CommentsModal from '../../components/CommentsModal';
 import RepostModal from '../../components/RepostModal';
 import LoadingState from '../../components/LoadingState';
 import EmptyState from '../../components/EmptyState';
-import Avatar from '../../components/Avatar';
 import UserName from '../../components/UserName';
 import { ApiPost } from '../../types/feed';
 
@@ -273,18 +272,31 @@ const ProfilePage = () => {
 
   const header = (
     <View className="pt-4">
-      <View className="items-center">
-        <TouchableOpacity activeOpacity={0.8} onPress={() => userData?.photo && setPhotoOpen(true)}>
-          <Avatar uri={userData?.photo} size={120} />
+      <View className="pt-4">
+        <TouchableOpacity
+          className="w-full"
+          activeOpacity={0.8}
+          onPress={() => userData?.photo && setPhotoOpen(true)}>
+          {userData?.photo ? (
+            <Image
+              source={{ uri: userData.photo }}
+              style={{ width: '100%', height: 128, borderRadius: 12 }}
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="h-32 w-full rounded-xl bg-slate-200" />
+          )}
         </TouchableOpacity>
 
-        <UserName
-          name={userData?.name}
-          role={role}
-          wrapperClassName="mt-4 flex-row items-center gap-2"
-          nameClassName="text-2xl font-bold text-slate-900"
-          roleClassName="text-sm text-slate-500"
-        />
+        <View className="mt-4 items-center">
+          <UserName
+            name={userData?.name}
+            role={role}
+            wrapperClassName="flex-row items-center gap-2"
+            nameClassName="text-2xl font-bold text-slate-900"
+            roleClassName="text-sm text-slate-500"
+          />
+        </View>
       </View>
 
       <View className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
@@ -309,6 +321,7 @@ const ProfilePage = () => {
         {!userData?.gender && (showStudent || showTeacher || showAdmin) ? (
           <InfoRow label="Gender" value="-" isLast />
         ) : null}
+        <InfoRow label="Email" value={user?.email} />
       </View>
 
       <View className="mt-4 flex-row-reverse gap-3">

@@ -34,8 +34,11 @@ const useComments = ({ onCountChange }: UseCommentsOptions = {}) => {
       setCommentsLoading(true);
       try {
         await fetchComments(postId);
-      } catch {
-        Alert.alert('Comments Error', 'Unable to load comments.');
+      } catch (error: any) {
+        const code = error?.response?.data?.code;
+        if (code !== 'ACCOUNT_PENDING') {
+          Alert.alert('Comment Error', 'Unable to post comment.');
+        }
       } finally {
         setCommentsLoading(false);
       }
@@ -72,8 +75,11 @@ const useComments = ({ onCountChange }: UseCommentsOptions = {}) => {
       setCommentText('');
       onCountChange?.(activePostId, 1);
       await fetchComments(activePostId);
-    } catch {
-      Alert.alert('Comment Error', 'Unable to post comment.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Comment Error', 'Unable to post comment.');
+      }
     } finally {
       setCommentSubmitting(false);
     }
@@ -95,8 +101,11 @@ const useComments = ({ onCountChange }: UseCommentsOptions = {}) => {
       await axiosSecure.delete(`/comments/${commentId}`);
       setComments((prev) => prev.filter((c) => c._id !== commentId));
       onCountChange?.(activePostId, -1);
-    } catch {
-      Alert.alert('Delete Error', 'Unable to delete comment.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Delete Error', 'Unable to delete comment.');
+      }
     }
   };
 

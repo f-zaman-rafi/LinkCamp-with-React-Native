@@ -22,8 +22,11 @@ const useReports = () => {
     try {
       await axiosSecure.post('/reports', { postId });
       Alert.alert('Reported', 'Thanks for your report.');
-    } catch {
-      Alert.alert('Report Error', 'Unable to submit report.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Report Error', 'Unable to submit report.');
+      }
     }
   };
 
@@ -31,8 +34,11 @@ const useReports = () => {
     try {
       await axiosSecure.post('/comment-reports', { commentId });
       Alert.alert('Reported', 'Thanks for your report.');
-    } catch {
-      Alert.alert('Report Error', 'Unable to submit report.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Report Error', 'Unable to submit report.');
+      }
     }
   };
 

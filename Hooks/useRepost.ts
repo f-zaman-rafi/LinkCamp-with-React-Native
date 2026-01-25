@@ -43,8 +43,11 @@ const useRepost = (options: UseRepostOptions = {}) => {
       Alert.alert('Reposted', 'Your repost is live.');
       onSuccess?.(repostPostId);
       closeRepost();
-    } catch {
-      Alert.alert('Repost Error', 'Unable to repost.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Repost Error', 'Unable to repost.');
+      }
     } finally {
       setRepostLoading(false);
     }
@@ -63,8 +66,11 @@ const useRepost = (options: UseRepostOptions = {}) => {
 
       Alert.alert('Reposted', 'Your repost is live.');
       onSuccess?.(postId);
-    } catch {
-      Alert.alert('Repost Error', 'Unable to repost.');
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        Alert.alert('Repost Error', 'Unable to repost.');
+      }
     }
   };
 

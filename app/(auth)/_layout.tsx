@@ -18,6 +18,9 @@ const AuthLayout = () => {
 
       {/* Forgot password screen */}
       <Stack.Screen name="forgot-password" />
+
+      {/* Blocked account screen */}
+      <Stack.Screen name="blocked" />
     </Stack>
   );
 };

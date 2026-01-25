@@ -64,8 +64,12 @@ const AddPost = () => {
       setPhotoUri(null);
       setPostType('general');
     } catch (error: any) {
-      const message = error?.response?.data?.message || error?.message || 'Failed to create post.';
-      Alert.alert('Post Error', message);
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        const message =
+          error?.response?.data?.message || error?.message || 'Failed to create post.';
+        Alert.alert('Post Error', message);
+      }
     } finally {
       setLoading(false);
     }

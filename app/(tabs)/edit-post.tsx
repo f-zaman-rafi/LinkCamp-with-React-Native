@@ -80,8 +80,11 @@ const EditPost = () => {
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error: any) {
-      const message = error?.response?.data?.message || error?.message || 'Update failed.';
-      Alert.alert('Edit Error', message);
+      const code = error?.response?.data?.code;
+      if (code !== 'ACCOUNT_PENDING') {
+        const message = error?.response?.data?.message || error?.message || 'Update failed.';
+        Alert.alert('Edit Error', message);
+      }
     } finally {
       setSaving(false);
     }

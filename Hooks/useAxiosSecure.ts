@@ -2,6 +2,7 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'expo-router';
 import useAuth from './useAuth';
+import { Alert } from 'react-native';
 
 const useAxiosSecure = (): AxiosInstance => {
   const { user, logOut } = useAuth();
@@ -27,10 +28,26 @@ const useAxiosSecure = (): AxiosInstance => {
     const res = instance.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        const status = error.response?.status;
+        const code = error.response?.data?.code;
+
+        // Pending approval → just notify, no logout
+        if (status === 403 && code === 'ACCOUNT_PENDING') {
+          Alert.alert('Pending approval', 'Please wait until an admin approves your account.');
+          return Promise.reject(error);
+        }
+
+        // Blocked → send to blocked page
+        if (status === 403 && code === 'ACCOUNT_BLOCKED') {
+          router.replace('/(auth)/blocked');
+          return Promise.reject(error);
+        }
+
+        if (status === 401 || status === 403) {
           await logOut();
           router.replace('/(auth)');
         }
+
         return Promise.reject(error);
       }
     );

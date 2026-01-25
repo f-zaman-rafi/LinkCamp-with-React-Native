@@ -77,11 +77,20 @@ const LoginScreen = () => {
       // Go to app
       router.replace('/(tabs)');
     } catch (error: any) {
+      const code = error?.response?.data?.code;
+
+      if (code === 'ACCOUNT_BLOCKED') {
+        setProfileChecked(true);
+        router.replace('/(auth)/blocked');
+        return;
+      }
+
       if (error?.response?.status === 404) {
         setProfileChecked(true);
         router.replace('/(auth)/create-profile');
         return;
       }
+
       Alert.alert('Login Error', error?.message, [
         { text: 'OK', onPress: () => router.replace('/(auth)') },
       ]);

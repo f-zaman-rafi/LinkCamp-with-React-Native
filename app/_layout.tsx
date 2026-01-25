@@ -13,6 +13,7 @@ const AuthStack = () => {
   const inAuthGroup = segments[0] === '(auth)';
   const onVerify = segments[0] === '(auth)' && segments[1] === 'verify-email';
   const onCreate = segments[0] === '(auth)' && segments[1] === 'create-profile';
+  const onBlocked = segments[0] === '(auth)' && segments[1] === 'blocked';
 
   const shouldWaitForProfile = user?.emailVerified && !profileChecked && !onCreate;
 
@@ -38,6 +39,7 @@ const AuthStack = () => {
   }
 
   if (!userData || !userData.userType) {
+    if (onBlocked) return <Stack screenOptions={{ headerShown: false }} />;
     if (!onCreate) return <Redirect href="/(auth)/create-profile" />;
     return <Stack screenOptions={{ headerShown: false }} />;
   }
