@@ -30,7 +30,9 @@ const AdminLayout = () => {
         name="users"
         options={{
           tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
-          headerTitle: () => <Text className="text-2xl font-extrabold text-[#0B1F3A]">Users</Text>,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Admin-Panel</Text>
+          ),
         }}
       />
 
@@ -39,7 +41,102 @@ const AdminLayout = () => {
         options={{
           tabBarIcon: ({ color, size }) => <Ionicons name="flag" size={size} color={color} />,
           headerTitle: () => (
-            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Reports</Text>
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Admin-Panel</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-all"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">All Users</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-students"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Students</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-teachers"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Teachers</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-admins"
+        options={{
+          href: null,
+          headerTitle: () => <Text className="text-2xl font-extrabold text-[#0B1F3A]">Admins</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="users-pending"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Pending</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-blocked"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Blocked</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="user/[id]"
+        options={{
+          href: null,
+          headerTitle: () => <Text className="text-2xl font-extrabold text-[#0B1F3A]">User</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="reports-posts"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Post Reports</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reports-comments"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Comment Reports</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="report-post/[id]"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Post Report</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="report-comment/[id]"
+        options={{
+          href: null,
+          headerTitle: () => (
+            <Text className="text-2xl font-extrabold text-[#0B1F3A]">Comment Report</Text>
           ),
         }}
       />

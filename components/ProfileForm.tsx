@@ -36,6 +36,8 @@ type ProfileFormProps = {
   secondaryLabel?: string;
   onSecondaryPress?: () => void;
   secondaryDisabled?: boolean;
+  readOnly?: boolean;
+  hideSubmit?: boolean;
 };
 
 const ProfileForm = ({
@@ -48,6 +50,8 @@ const ProfileForm = ({
   secondaryLabel,
   onSecondaryPress,
   secondaryDisabled,
+  readOnly = false,
+  hideSubmit = false,
 }: ProfileFormProps) => {
   const [photoUri, setPhotoUri] = useState<string | null>(initialPhotoUri);
 
@@ -73,7 +77,6 @@ const ProfileForm = ({
     },
   });
 
-  // If parent loads data later (edit profile), update form.
   useEffect(() => {
     if (initialValues) {
       reset({
@@ -120,6 +123,8 @@ const ProfileForm = ({
   ];
 
   const pickPhoto = async () => {
+    if (readOnly) return;
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -164,9 +169,10 @@ const ProfileForm = ({
         />
       ) : null}
 
-      <View className="mb-4">
+      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
         <TouchableOpacity
           onPress={pickPhoto}
+          disabled={readOnly}
           className="rounded-xl border border-slate-300 px-4 py-3">
           <Text className="text-center text-slate-600">
             {photoUri ? 'Photo Selected' : 'Select Profile Photo'}
@@ -175,7 +181,7 @@ const ProfileForm = ({
         {errors.photo && <Text className="mt-1 text-xs text-red-500">{errors.photo.message}</Text>}
       </View>
 
-      <View className="mb-4">
+      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
         <Text className="mb-2 font-semibold">First Name</Text>
         <Controller
           control={control}
@@ -183,19 +189,19 @@ const ProfileForm = ({
           rules={{ required: 'First name is required' }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className={`h-14 rounded-xl border px-4 ${errors.firstName ? 'border-red-500' : 'border-slate-300'}`}
+              editable={!readOnly}
+              className={`h-14 rounded-xl border px-4 ${
+                errors.firstName ? 'border-red-500' : 'border-slate-300'
+              }`}
               value={value}
               onChangeText={onChange}
               placeholder="First name"
             />
           )}
         />
-        {errors.firstName && (
-          <Text className="mt-1 text-xs text-red-500">{errors.firstName.message}</Text>
-        )}
       </View>
 
-      <View className="mb-4">
+      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
         <Text className="mb-2 font-semibold">Last Name</Text>
         <Controller
           control={control}
@@ -203,19 +209,19 @@ const ProfileForm = ({
           rules={{ required: 'Last name is required' }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className={`h-14 rounded-xl border px-4 ${errors.lastName ? 'border-red-500' : 'border-slate-300'}`}
+              editable={!readOnly}
+              className={`h-14 rounded-xl border px-4 ${
+                errors.lastName ? 'border-red-500' : 'border-slate-300'
+              }`}
               value={value}
               onChangeText={onChange}
               placeholder="Last name"
             />
           )}
         />
-        {errors.lastName && (
-          <Text className="mt-1 text-xs text-red-500">{errors.lastName.message}</Text>
-        )}
       </View>
 
-      <View className="mb-4">
+      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
         <Text className="mb-2 font-semibold">Gender</Text>
         <Controller
           control={control}
@@ -223,6 +229,7 @@ const ProfileForm = ({
           rules={{ required: 'Required' }}
           render={({ field: { onChange, value } }) => (
             <Dropdown
+              disable={readOnly}
               style={[
                 {
                   height: 56,
@@ -246,7 +253,7 @@ const ProfileForm = ({
         />
       </View>
 
-      <View className="mb-6">
+      <View className={`mb-6 ${readOnly ? 'opacity-60' : ''}`}>
         <Text className="mb-2 font-semibold">User Type</Text>
         <Controller
           control={control}
@@ -256,6 +263,7 @@ const ProfileForm = ({
               {(['student', 'teacher', 'admin'] as UserType[]).map((type) => (
                 <TouchableOpacity
                   key={type}
+                  disabled={readOnly}
                   className={`flex-1 rounded-xl border py-3 ${
                     value === type ? 'border-blue-600 bg-blue-50' : 'border-slate-300'
                   }`}
@@ -281,7 +289,7 @@ const ProfileForm = ({
       </View>
 
       {(selectedUserType === 'student' || selectedUserType === 'teacher') && (
-        <View>
+        <View className={readOnly ? 'opacity-60' : ''}>
           <Text className="mb-2 font-semibold">
             {selectedUserType === 'student' ? 'Student ID' : 'Teacher ID'}
           </Text>
@@ -294,7 +302,10 @@ const ProfileForm = ({
             }}
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`mb-4 h-14 rounded-xl border px-4 ${errors.Id ? 'border-red-500' : 'border-slate-300'}`}
+                editable={!readOnly}
+                className={`mb-4 h-14 rounded-xl border px-4 ${
+                  errors.Id ? 'border-red-500' : 'border-slate-300'
+                }`}
                 value={value}
                 onChangeText={onChange}
                 placeholder="ID Number"
@@ -313,6 +324,7 @@ const ProfileForm = ({
             rules={{ required: 'Required' }}
             render={({ field: { onChange, value } }) => (
               <Dropdown
+                disable={readOnly}
                 style={[
                   {
                     height: 56,
@@ -344,6 +356,7 @@ const ProfileForm = ({
                 rules={{ required: 'Required' }}
                 render={({ field: { onChange, value } }) => (
                   <Dropdown
+                    disable={readOnly}
                     style={[
                       {
                         height: 56,
@@ -370,38 +383,40 @@ const ProfileForm = ({
         </View>
       )}
 
-      {secondaryLabel && onSecondaryPress ? (
-        <View className="mt-4 mb-14 flex-row-reverse gap-3">
+      {!hideSubmit ? (
+        secondaryLabel && onSecondaryPress ? (
+          <View className="mt-4 flex-row gap-3">
+            <TouchableOpacity
+              className={`flex-1 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
+              onPress={handleSubmit(submitHandler, onError)}
+              disabled={loading || readOnly}>
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-1 rounded-xl border border-red-500 py-4"
+              onPress={onSecondaryPress}
+              disabled={secondaryDisabled}>
+              <Text className="text-center text-lg font-bold text-red-500">{secondaryLabel}</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
           <TouchableOpacity
-            className={`flex-1 rounded-xl bg-red-600 py-4 ${loading ? 'opacity-50' : ''}`}
+            className={`mt-4 rounded-xl bg-blue-600 py-4 ${loading ? 'opacity-50' : ''}`}
             onPress={handleSubmit(submitHandler, onError)}
-            disabled={loading}>
+            disabled={loading || readOnly}>
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
               <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
             )}
           </TouchableOpacity>
-
-          <TouchableOpacity
-            className="flex-1 rounded-xl bg-stone-800 py-4"
-            onPress={onSecondaryPress}
-            disabled={secondaryDisabled}>
-            <Text className="text-center text-lg font-bold text-white">{secondaryLabel}</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity
-          className={`mt-4 mb-5 rounded-xl bg-red-600 py-4 ${loading ? 'opacity-50' : ''}`}
-          onPress={handleSubmit(submitHandler, onError)}
-          disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-center text-lg font-bold text-white">{submitLabel}</Text>
-          )}
-        </TouchableOpacity>
-      )}
+        )
+      ) : null}
     </ScrollView>
   );
 };
