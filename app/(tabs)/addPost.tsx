@@ -76,49 +76,51 @@ const AddPost = () => {
   };
 
   return (
-    <ScrollView>
-      <PostEditor
-        title="Create Post"
-        subtitle="Share something with your campus."
-        content={content}
-        onChangeContent={setContent}
-        photoUri={photoUri}
-        onPickPhoto={pickImage}
-        primaryLabel="Post"
-        primaryLoading={loading}
-        onPrimaryPress={handlePost}
-        topSlot={
-          <View className="mt-6 flex-row items-center gap-3">
-            <Avatar uri={userData?.photo} size={40} />
-            <Text className="text-slate-700">{userData?.name || 'You'}</Text>
-          </View>
-        }
-        bottomSlot={
-          role !== 'student' ? (
-            <View className="mt-4">
-              <Text className="mb-2 font-semibold text-slate-700">Post As</Text>
-              <View className="flex-row gap-3">
-                {postTypeOptions.map((opt) => (
-                  <TouchableOpacity
-                    key={opt.value}
-                    className={`flex-1 rounded-xl border py-3 ${
-                      postType === opt.value ? 'border-blue-600 bg-blue-50' : 'border-slate-300'
-                    }`}
-                    onPress={() => setPostType(opt.value)}>
-                    <Text
-                      className={`text-center font-bold ${
-                        postType === opt.value ? 'text-blue-600' : 'text-slate-500'
-                      }`}>
-                      {opt.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+    <View className="flex-1 bg-white">
+      <ScrollView>
+        <PostEditor
+          title="Create Post"
+          subtitle="Share something with your campus."
+          content={content}
+          onChangeContent={setContent}
+          photoUri={photoUri}
+          onPickPhoto={pickImage}
+          primaryLabel="Post"
+          primaryLoading={loading}
+          onPrimaryPress={handlePost}
+          topSlot={
+            <View className="mt-6 flex-row items-center gap-3">
+              <Avatar uri={userData?.photo} size={40} />
+              <Text className="text-slate-700">{userData?.name || 'You'}</Text>
             </View>
-          ) : null
-        }
-      />
-    </ScrollView>
+          }
+          bottomSlot={
+            role !== 'student' ? (
+              <View className="mt-4">
+                <Text className="mb-2 font-semibold text-slate-700">Post As</Text>
+                <View className="flex-row gap-3">
+                  {postTypeOptions.map((opt) => (
+                    <TouchableOpacity
+                      key={opt.value}
+                      className={`flex-1 rounded-xl border py-3 ${
+                        postType === opt.value ? 'border-blue-600 bg-blue-50' : 'border-slate-300'
+                      }`}
+                      onPress={() => setPostType(opt.value)}>
+                      <Text
+                        className={`text-center font-bold ${
+                          postType === opt.value ? 'text-blue-600' : 'text-slate-500'
+                        }`}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            ) : null
+          }
+        />
+      </ScrollView>
+    </View>
   );
 };
 

@@ -8,7 +8,7 @@ const AdminUsers = () => {
       <TouchableOpacity
         className="flex-1 items-center justify-center bg-slate-800"
         onPress={() => router.push('/(admin)/users-all')}>
-        <Text className="text-xl font-extrabold text-white">All</Text>
+        <Text className="text-xl font-extrabold text-white">All Users</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

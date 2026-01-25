@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import AuthProvider from '../providers/AuthProviders';
 import useAuth from '../Hooks/useAuth';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { UserProvider, useUserContext } from '../providers/UserContext';
 
 const AuthStack = () => {
@@ -59,9 +59,22 @@ const RootLayout = () => {
   return (
     // Global authentication provider (Firebase auth state)
     <AuthProvider>
-      {/* Global user metadata provider (role, verify status, profile info) */}
       <UserProvider>
-        <AuthStack />
+        <View
+          style={
+            Platform.OS === 'web'
+              ? { flex: 1, backgroundColor: '#e5e7eb' } // gray-200
+              : { flex: 1 }
+          }>
+          <View
+            style={
+              Platform.OS === 'web'
+                ? { maxWidth: 430, width: '100%', alignSelf: 'center', minHeight: '100%' }
+                : { flex: 1 }
+            }>
+            <AuthStack />
+          </View>
+        </View>
       </UserProvider>
     </AuthProvider>
   );
