@@ -324,6 +324,14 @@ const ProfilePage = () => {
         <InfoRow label="Email" value={user?.email} />
       </View>
 
+      {userData?.userType === 'admin' ? (
+        <TouchableOpacity
+          className="mt-3 rounded-xl border border-stone-800 py-3"
+          onPress={() => router.push('/(admin)/users')}>
+          <Text className="text-center font-semibold text-stone-800">Go to Admin Panel</Text>
+        </TouchableOpacity>
+      ) : null}
+
       <View className="mt-4 flex-row-reverse gap-3">
         <TouchableOpacity
           className="flex-1 rounded-xl bg-red-600 py-3"
