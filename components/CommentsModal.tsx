@@ -60,7 +60,7 @@ const CommentsModal = ({
         </View>
 
         {loading ? (
-          <View className="mt-4 items-center">
+          <View className="mt-4 flex-1 items-center justify-center">
             <ActivityIndicator color="#2563eb" />
           </View>
         ) : comments.length === 0 ? (

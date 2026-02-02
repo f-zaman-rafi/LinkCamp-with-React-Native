@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import ProfileForm, { ProfileFormData } from '../../../components/ProfileForm';
+import AdminSubPage from '../../../components/AdminSubPage';
 
 const AdminUserDetail = () => {
   const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
@@ -70,41 +71,43 @@ const AdminUserDetail = () => {
   }
 
   return (
-    <View className="flex-1 bg-white px-6">
-      <View className="my-4">
-        <Text className="mb-2 text-xs font-semibold text-slate-500">Status</Text>
-        <View className="flex-row gap-3">
-          {(['pending', 'approved', 'blocked'] as const).map((s) => (
-            <TouchableOpacity
-              key={s}
-              className={`flex-1 rounded-xl py-3 ${status === s ? 'bg-slate-800' : 'bg-slate-200'}`}
-              onPress={() => setStatus(s)}>
-              <Text
-                className={`text-center font-semibold ${status === s ? 'text-white' : 'text-slate-700'}`}>
-                {s.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          ))}
+    <AdminSubPage>
+      <View className="flex-1 bg-white px-6">
+        <View className="my-4">
+          <Text className="mb-2 text-xs font-semibold text-slate-500">Status</Text>
+          <View className="flex-row gap-3">
+            {(['pending', 'approved', 'blocked'] as const).map((s) => (
+              <TouchableOpacity
+                key={s}
+                className={`flex-1 rounded-xl py-3 ${status === s ? 'bg-slate-800' : 'bg-slate-200'}`}
+                onPress={() => setStatus(s)}>
+                <Text
+                  className={`text-center font-semibold ${status === s ? 'text-white' : 'text-slate-700'}`}>
+                  {s.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
-      <ProfileForm
-        initialValues={initialValues}
-        initialPhotoUri={initialPhoto}
-        requirePhoto={false}
-        onSubmit={() => {}}
-        readOnly
-        hideSubmit
-      />
+        <ProfileForm
+          initialValues={initialValues}
+          initialPhotoUri={initialPhoto}
+          requirePhoto={false}
+          onSubmit={() => {}}
+          readOnly
+          hideSubmit
+        />
 
-      <TouchableOpacity
-        className={`my-2 rounded-xl py-4 ${saving ? 'bg-slate-300' : 'bg-red-600'}`}
-        onPress={updateStatus}
-        disabled={saving}>
-        <Text className="text-center text-lg font-bold text-white">
-          {saving ? 'Saving...' : 'Save Status'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          className={`my-2 rounded-xl py-4 ${saving ? 'bg-slate-300' : 'bg-red-600'}`}
+          onPress={updateStatus}
+          disabled={saving}>
+          <Text className="text-center text-lg font-bold text-white">
+            {saving ? 'Saving...' : 'Save Status'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </AdminSubPage>
   );
 };
 

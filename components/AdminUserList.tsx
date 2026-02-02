@@ -37,7 +37,12 @@ const AdminUserList = ({ title, query = {}, returnPath }: AdminUserListProps) =>
   const renderItem = ({ item, index }: { item: AdminUser; index: number }) => (
     <TouchableOpacity
       className="flex-row border-b border-slate-100 px-4 py-3"
-      onPress={() => router.push(`/(admin)/user/${item._id}?from=${returnPath}`)}>
+      onPress={() =>
+        router.push({
+          pathname: '/(admin)/user/[id]',
+          params: { id: item._id, from: returnPath },
+        })
+      }>
       <Text className="w-10 text-sm text-slate-500">{(page - 1) * 20 + index + 1}</Text>
       <Text className="flex-1 text-sm font-semibold text-slate-900">{item.name || 'Unknown'}</Text>
       <Text className="w-24 text-xs text-slate-500">{item.userType}</Text>
