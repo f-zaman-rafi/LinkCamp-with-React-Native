@@ -4,6 +4,7 @@ import AuthProvider from '../providers/AuthProviders';
 import useAuth from '../Hooks/useAuth';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { UserProvider, useUserContext } from '../providers/UserContext';
+import { WebAlertProvider } from '../providers/WebAlertProvider';
 
 const AuthStack = () => {
   const segments = useSegments() as string[];
@@ -60,21 +61,23 @@ const RootLayout = () => {
     // Global authentication provider (Firebase auth state)
     <AuthProvider>
       <UserProvider>
-        <View
-          style={
-            Platform.OS === 'web'
-              ? { flex: 1, backgroundColor: '#e5e7eb' } // gray-200
-              : { flex: 1 }
-          }>
+        <WebAlertProvider>
           <View
             style={
               Platform.OS === 'web'
-                ? { maxWidth: 430, width: '100%', alignSelf: 'center', minHeight: '100%' }
+                ? { flex: 1, backgroundColor: '#e5e7eb' } // gray-200
                 : { flex: 1 }
             }>
-            <AuthStack />
+            <View
+              style={
+                Platform.OS === 'web'
+                  ? { maxWidth: 430, width: '100%', alignSelf: 'center', minHeight: '100%' }
+                  : { flex: 1 }
+              }>
+              <AuthStack />
+            </View>
           </View>
-        </View>
+        </WebAlertProvider>
       </UserProvider>
     </AuthProvider>
   );
