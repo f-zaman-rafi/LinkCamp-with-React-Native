@@ -7,6 +7,7 @@ import { ApiPost, VoteCounts, VoteType } from '../types/feed';
 import ExpandableText from './ExpandableText';
 import { postTypeLabel } from '../utils/postType';
 import { Ionicons } from '@expo/vector-icons';
+import { formatRelativeTime } from '../utils/time';
 
 type PostCardProps = {
   post: ApiPost;
@@ -47,6 +48,7 @@ const PostCard = ({
       { text: 'Cancel', style: 'cancel' },
     ]);
   };
+  const timeLabel = formatRelativeTime(post.createdAt);
 
   return (
     <View className="border-b-2 border-dashed border-slate-200 py-4">
@@ -82,7 +84,7 @@ const PostCard = ({
                   flex: 1,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: 'rgba(0,0,0,0.9)', // same as your profile
+                  backgroundColor: 'rgba(0,0,0,0.9)',
                 }}>
                 <TouchableOpacity
                   onPress={() => setPhotoOpen(false)}
@@ -118,6 +120,7 @@ const PostCard = ({
           onDownvote={() => onVote(post._id, 'downvote')}
           onComments={() => onOpenComments(post._id)}
           onRepostOptions={handleRepostOptions}
+          timeLabel={timeLabel}
         />
       </View>
     </View>

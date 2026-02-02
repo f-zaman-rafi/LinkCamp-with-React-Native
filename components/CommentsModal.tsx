@@ -16,6 +16,7 @@ import { Comment } from '../types/feed';
 import Avatar from './Avatar';
 import UserName from './UserName';
 import ExpandableText from './ExpandableText';
+import { formatRelativeTime } from '../utils/time';
 
 type CommentsModalProps = {
   visible: boolean;
@@ -73,16 +74,23 @@ const CommentsModal = ({
             data={comments}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
-              <View className="mt-4 flex-row gap-3">
+              <View className="mt-4 flex-row gap-3 border-b border-dashed border-slate-300 pb-4">
                 <Avatar uri={item.user?.photo} size={32} />
                 <View className="flex-1">
-                  <View className="flex-row items-center justify-between">
-                    <UserName
-                      name={item.user?.name}
-                      role={(item.user as any)?.user_type}
-                      nameClassName="text-sm font-semibold text-slate-800"
-                      roleClassName="text-[10px] text-slate-500"
-                    />
+                  <View className="flex-row items-center justify-between pb-2">
+                    <View className="flex items-start">
+                      <UserName
+                        name={item.user?.name}
+                        role={(item.user as any)?.user_type}
+                        nameClassName="text-sm font-semibold text-slate-800"
+                        roleClassName="text-[10px] text-slate-500"
+                      />
+                      {item.createdAt ? (
+                        <Text className="mt-1 text-right text-[10px] text-slate-400">
+                          {formatRelativeTime(item.createdAt)}
+                        </Text>
+                      ) : null}
+                    </View>
 
                     <TouchableOpacity onPress={() => onOpenCommentActions(item)}>
                       <Ionicons name="ellipsis-horizontal" size={16} color="#94a3b8" />
