@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { optimizeImageForUpload } from '../utils/optimizeImage';
 
 type ImagePickerOptions = {
   allowsEditing?: boolean;
@@ -27,7 +28,15 @@ const useImagePicker = (options: ImagePickerOptions = {}) => {
     });
 
     if (!result.canceled) {
-      setPhotoUri(result.assets[0].uri);
+      const selectedUri = result.assets[0].uri;
+
+      try {
+        const optimized = await optimizeImageForUpload(selectedUri);
+        setPhotoUri(optimized.uri);
+      } catch (error) {
+        console.warn('Image optimization failed, using original image', error);
+        setPhotoUri(selectedUri);
+      }
     }
   };
 
