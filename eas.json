@@ -10,7 +10,8 @@
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "android": { "buildType": "apk" },
+      "node": "20.19.4"
     },
     "production": {
       "autoIncrement": true
