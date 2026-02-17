@@ -15,6 +15,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import { useUserContext } from '../../providers/UserContext';
+import useAppLogout from '../../Hooks/useAppLogout';
 import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
@@ -31,8 +32,9 @@ import { ApiPost } from '../../types/feed';
 const ProfilePage = () => {
   const router = useRouter();
   const axiosSecure = useAxiosSecure();
-  const { user, logOut, loading: authLoading } = useAuth();
-  const { userData, setUserData, setProfileChecked } = useUserContext();
+  const { user } = useAuth();
+  const { userData, setUserData } = useUserContext();
+  const { confirmLogout, logoutLoading } = useAppLogout();
   const email = user?.email || '';
   const listRef = useRef<FlatList<ApiPost>>(null);
 
@@ -82,17 +84,6 @@ const ProfilePage = () => {
       setProfileLoading(false);
     }
   }, [axiosSecure, email, setUserData]);
-
-  const handleLogout = async () => {
-    try {
-      await logOut();
-      setUserData(null);
-      setProfileChecked(false);
-      router.replace('/(auth)');
-    } catch (e) {
-      console.error('Logout failed:', e);
-    }
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -340,10 +331,10 @@ const ProfilePage = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className={`flex-1 rounded-xl py-3 shadow-sm ${authLoading ? 'bg-stone-300' : 'bg-stone-800'}`}
-          onPress={handleLogout}
-          disabled={authLoading}>
-          {authLoading ? (
+          className={`flex-1 rounded-xl py-3 shadow-sm ${logoutLoading ? 'bg-stone-300' : 'bg-stone-800'}`}
+          onPress={confirmLogout}
+          disabled={logoutLoading}>
+          {logoutLoading ? (
             <ActivityIndicator color="white" />
           ) : (
             <Text className="text-center font-semibold text-white">Log Out</Text>
