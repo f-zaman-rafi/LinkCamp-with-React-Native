@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Modal,
+  Pressable,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { useForm, Controller, set } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +25,17 @@ const LoginScreen = () => {
   const { setUserData, setProfileChecked } = useUserContext(); // User context
   const [loading, setLoading] = useState(false); // Loading state
   const [showPassword, setShowPassword] = useState(false); // Show/hide password
+  // Dev credentials dropdown
+  const DEV_ACCOUNTS: Record<string, { label: string; email: string; password: string }> = {
+    admin: { label: 'Admin', email: 'admin@uni.edu', password: '12q!@Q' },
+    teacher: { label: 'Teacher', email: 'teacher@uni.edu', password: '12q!@Q' },
+    student: { label: 'Student', email: 'student@uni.edu', password: '12q!@Q' },
+    pending: { label: 'Pending', email: 'pending@uni.edu', password: '12q!@Q' },
+    blocked: { label: 'Blocked', email: 'blocked@uni.edu', password: '12q!@Q' },
+  };
+  const [devOpen, setDevOpen] = useState(false);
+  const [showDevInfo, setShowDevInfo] = useState(false);
+  const isWeb = Platform.OS === 'web';
   const {
     control,
     handleSubmit,
@@ -99,6 +120,22 @@ const LoginScreen = () => {
     }
   };
 
+  const toggleDevInfo = () => {
+    setDevOpen(false);
+    setShowDevInfo((v) => !v);
+  };
+
+  const toggleDevOpen = () => {
+    setShowDevInfo(false);
+    setDevOpen((v) => !v);
+  };
+
+  const handleDevAccountSelect = (acc: { email: string; password: string }) => {
+    setValue('email', acc.email);
+    setValue('password', acc.password);
+    setDevOpen(false);
+  };
+
   return (
     <View className="flex-1 justify-center bg-white px-6">
       {/*  Header */}
@@ -173,14 +210,42 @@ const LoginScreen = () => {
           )}
         </View>
 
-        <TouchableOpacity
-          className="mb-3 rounded-xl border border-slate-300 py-2"
-          onPress={() => {
-            setValue('email', 'gollarafi@gmail.com');
-            setValue('password', '12q!@Q');
-          }}>
-          <Text className="text-center text-slate-600">Use Dev Credentials</Text>
-        </TouchableOpacity>
+        {/* Dev Credentials Dropdown */}
+        <View className="relative mt-5 mb-3">
+          {/* Info Button */}
+          <TouchableOpacity className="absolute -top-5 right-2 z-50" onPress={toggleDevInfo}>
+            <Ionicons name="information-circle-outline" size={15} color="#0864e7" />
+          </TouchableOpacity>
+
+          {!isWeb && showDevInfo && (
+            <View className="absolute top-0 right-2 z-50 w-64 rounded-lg border border-slate-200 bg-gray-100 p-3 shadow-sm">
+              <Text className="bg-gray-100 text-xs text-slate-800">
+                If you are new or testing the app, you can either create a new account or use the
+                preset development credentials below to explore different user roles (Admin,
+                Teacher, Student, Pending, Blocked).
+              </Text>
+            </View>
+          )}
+          <TouchableOpacity
+            className="flex-row items-center justify-between rounded-xl border border-slate-300 bg-white px-4 py-3"
+            onPress={toggleDevOpen}>
+            <Text className="text-slate-600">Use Dev Credentials</Text>
+            <Ionicons name={devOpen ? 'chevron-up' : 'chevron-down'} size={18} color={'#64748b'} />
+          </TouchableOpacity>
+
+          {!isWeb && devOpen && (
+            <View className="absolute top-14 right-0 left-0 z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              {Object.entries(DEV_ACCOUNTS).map(([key, acc], idx) => (
+                <TouchableOpacity
+                  key={key}
+                  className={`px-4 py-3 ${idx === Object.keys(DEV_ACCOUNTS).length - 1 ? '' : 'border-b border-slate-100'}`}
+                  onPress={() => handleDevAccountSelect(acc)}>
+                  <Text className="text-slate-700">Sign in as {acc.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
         <View className="mr-2 mb-6 flex-row justify-end">
           <Text className="text-center text-slate-500">
@@ -213,6 +278,66 @@ const LoginScreen = () => {
           </Text>
         </Text>
       </View>
+
+      {isWeb && (
+        <>
+          <Modal
+            visible={showDevInfo}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowDevInfo(false)}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingTop: 200,
+                paddingLeft: 40,
+              }}>
+              <Pressable
+                style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+                onPress={() => setShowDevInfo(false)}
+              />
+              <View className="w-full max-w-xs rounded-xl border border-slate-200 bg-gray-200 p-4 opacity-90 shadow-sm">
+                <Text className="text-xs leading-5 text-slate-600">
+                  If you are new or testing the app, you can either create a new account or use the
+                  preset development credentials below to explore different user roles (Admin,
+                  Teacher, Student, Pending, Blocked).
+                </Text>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={devOpen}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setDevOpen(false)}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingTop: 420,
+              }}>
+              <Pressable
+                style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+                onPress={() => setDevOpen(false)}
+              />
+              <View className="w-full max-w-sm overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                {Object.entries(DEV_ACCOUNTS).map(([key, acc], idx) => (
+                  <TouchableOpacity
+                    key={key}
+                    className={`px-4 py-3 ${idx === Object.keys(DEV_ACCOUNTS).length - 1 ? '' : 'border-b border-slate-100'}`}
+                    onPress={() => handleDevAccountSelect(acc)}>
+                    <Text className="text-slate-700">Sign in as {acc.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </Modal>
+        </>
+      )}
     </View>
   );
 };
