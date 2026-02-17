@@ -20,6 +20,9 @@ export const WebAlertProvider = ({ children }: { children: React.ReactNode }) =>
   const [portalEl, setPortalEl] = useState<HTMLElement | null>(null);
 
   const show = useCallback((title?: string, message?: string, buttons?: AlertButton[]) => {
+    if (typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+    }
     const list = buttons?.length ? buttons : [{ text: 'OK' }];
     setAlert({ title, message, buttons: list });
   }, []);

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import useAuth from './useAuth';
 import { useUserContext } from '../providers/UserContext';
@@ -28,6 +28,9 @@ const useAppLogout = () => {
 
   const confirmLogout = useCallback(() => {
     if (logoutLoading) return;
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+    }
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Log Out', style: 'destructive', onPress: logoutNow },

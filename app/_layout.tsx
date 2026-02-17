@@ -63,11 +63,7 @@ const RootLayout = () => {
       <UserProvider>
         <WebAlertProvider>
           <View
-            style={
-              Platform.OS === 'web'
-                ? { flex: 1, backgroundColor: '#e5e7eb' } // gray-200
-                : { flex: 1 }
-            }>
+            style={Platform.OS === 'web' ? { flex: 1, backgroundColor: '#e5e7eb' } : { flex: 1 }}>
             <View
               style={
                 Platform.OS === 'web'

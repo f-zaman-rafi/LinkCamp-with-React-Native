@@ -116,15 +116,6 @@ const ProfilePage = () => {
     return map;
   }, [mergedPosts]);
 
-  const sortedPosts = useMemo(() => {
-    const list = [...mergedPosts];
-    return list.sort((a, b) => {
-      const aTime = new Date(a.createdAt || 0).getTime();
-      const bTime = new Date(b.createdAt || 0).getTime();
-      return bTime - aTime;
-    });
-  }, [mergedPosts]);
-
   const {
     commentsOpen,
     commentsLoading,
@@ -350,7 +341,7 @@ const ProfilePage = () => {
     <View className="flex-1 bg-white">
       <FlatList
         ref={listRef}
-        data={sortedPosts}
+        data={mergedPosts}
         keyExtractor={(item) => item._id}
         renderItem={renderPost}
         ListHeaderComponent={header}

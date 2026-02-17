@@ -61,7 +61,7 @@ const RepostModal = ({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
           <TextInput
-            className="min-h-[120px] rounded-xl border border-slate-300 px-3 py-2"
+            className="min-h-30 rounded-xl border border-slate-300 px-3 py-2"
             placeholder={placeholder}
             value={thought}
             onChangeText={onChangeThought}

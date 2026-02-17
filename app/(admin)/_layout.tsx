@@ -17,7 +17,8 @@ const AdminLayout = () => {
         headerTitle: () => (
           <Image
             source={logo}
-            style={{ width: 44, height: 44, resizeMode: 'contain', tintColor: '#22c55e' }}
+            tintColor="#22c55e"
+            style={{ width: 44, height: 44, resizeMode: 'contain' }}
           />
         ),
         headerRight: () => (
@@ -33,7 +34,8 @@ const AdminLayout = () => {
           headerLeft: () => (
             <Image
               source={logo}
-              style={{ width: 44, height: 44, marginLeft: 12, tintColor: '#22c55e' }}
+              tintColor="#22c55e"
+              style={{ width: 44, height: 44, marginLeft: 12 }}
             />
           ),
           headerTitle: () => (
@@ -49,7 +51,8 @@ const AdminLayout = () => {
           headerLeft: () => (
             <Image
               source={logo}
-              style={{ width: 44, height: 44, marginLeft: 12, tintColor: '#22c55e' }}
+              tintColor="#22c55e"
+              style={{ width: 44, height: 44, marginLeft: 12 }}
             />
           ),
           headerTitle: () => (

@@ -121,11 +121,17 @@ const LoginScreen = () => {
   };
 
   const toggleDevInfo = () => {
+    if (isWeb && typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+    }
     setDevOpen(false);
     setShowDevInfo((v) => !v);
   };
 
   const toggleDevOpen = () => {
+    if (isWeb && typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+    }
     setShowDevInfo(false);
     setDevOpen((v) => !v);
   };

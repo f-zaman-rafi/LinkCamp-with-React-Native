@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import useAppLogout from '../../Hooks/useAppLogout';
 import { useUserContext } from '../../providers/UserContext';
@@ -23,7 +23,7 @@ const TabLayout = () => {
 
         headerTitleAlign: 'center',
         tabBarStyle: { height: 70, paddingBottom: 5, paddingTop: 5, paddingRight: 5 },
-        headerStyle: { height: 110 },
+        headerStyle: { height: Platform.OS === 'web' ? 60 : 110 },
         headerShadowVisible: false,
         headerLeft: () => <Image source={logo} style={{ width: 44, height: 44, marginLeft: 12 }} />,
         headerRight: () => (
