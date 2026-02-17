@@ -7,6 +7,7 @@ import PostEditor from '../../components/PostEditor';
 import useImagePicker from '../../Hooks/useImagePicker';
 import { PostType as FeedPostType } from '../../types/feed';
 import Avatar from '../../components/Avatar';
+import { appendImageToFormData, getMultipartHeaders } from '../../utils/upload';
 
 type PostType = Exclude<FeedPostType, 'repost'>;
 
@@ -47,15 +48,11 @@ const AddPost = () => {
       formData.append('postType', postType);
 
       if (photoUri) {
-        formData.append('photo', {
-          uri: photoUri,
-          name: 'post.jpg',
-          type: 'image/jpeg',
-        } as any);
+        await appendImageToFormData(formData, 'photo', photoUri, 'post.jpg');
       }
 
       await axiosSecure.post('/user/post', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: getMultipartHeaders(),
       });
 
       Alert.alert('Success', 'Post created!');

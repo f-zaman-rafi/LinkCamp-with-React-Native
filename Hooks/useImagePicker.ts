@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 type ImagePickerOptions = {
@@ -12,10 +12,12 @@ const useImagePicker = (options: ImagePickerOptions = {}) => {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
 
   const pickImage = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permission.status !== 'granted') {
-      Alert.alert('Permission required', 'Please allow photo access to continue.');
-      return;
+    if (Platform.OS !== 'web') {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permission.status !== 'granted') {
+        Alert.alert('Permission required', 'Please allow photo access to continue.');
+        return;
+      }
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({

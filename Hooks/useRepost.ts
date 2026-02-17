@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import useAxiosSecure from './useAxiosSecure';
+import { getMultipartHeaders } from '../utils/upload';
 
 type UseRepostOptions = {
   onSuccess?: (postId: string) => void;
@@ -37,7 +38,7 @@ const useRepost = (options: UseRepostOptions = {}) => {
       formData.append('repostOf', repostPostId);
 
       await axiosSecure.post('/user/post', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: getMultipartHeaders(),
       });
 
       Alert.alert('Reposted', 'Your repost is live.');
@@ -61,7 +62,7 @@ const useRepost = (options: UseRepostOptions = {}) => {
       formData.append('repostOf', postId);
 
       await axiosSecure.post('/user/post', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: getMultipartHeaders(),
       });
 
       Alert.alert('Reposted', 'Your repost is live.');

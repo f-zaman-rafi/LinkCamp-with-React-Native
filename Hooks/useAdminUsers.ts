@@ -31,9 +31,13 @@ const useAdminUsers = (params: Params = {}) => {
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
-    const res = await axiosSecure.get('/admin/users', {
-      params: { role, verify, page, limit, sort },
-    });
+    const res = await axiosSecure.get(
+      '/admin/users',
+
+      {
+        params: { role, verify, page, limit, sort },
+      }
+    );
 
     const data = res.data;
     const items = Array.isArray(data) ? data : data?.items || [];

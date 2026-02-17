@@ -7,6 +7,7 @@ import { auth } from '../../firebase/firebase.config';
 import AuthHeader from '../../components/AuthHeader';
 import ProfileForm, { ProfileFormData } from '../../components/ProfileForm';
 import useAuth from '../../Hooks/useAuth';
+import { appendImageToFormData, getMultipartHeaders } from '../../utils/upload';
 
 const CreateProfile = () => {
   const router = useRouter();
@@ -45,16 +46,12 @@ const CreateProfile = () => {
       formData.append('gender', data.gender);
 
       if (photoUri) {
-        formData.append('photo', {
-          uri: photoUri,
-          name: 'profile.jpg',
-          type: 'image/jpeg',
-        } as any);
+        await appendImageToFormData(formData, 'photo', photoUri, 'profile.jpg');
       }
 
       const response = await axiosCommon.post('/users', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          ...getMultipartHeaders(),
           Authorization: `Bearer ${idToken}`,
         },
       });

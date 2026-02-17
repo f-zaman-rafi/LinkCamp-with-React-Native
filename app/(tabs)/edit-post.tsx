@@ -6,6 +6,7 @@ import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import PostEditor from '../../components/PostEditor';
 import useImagePicker from '../../Hooks/useImagePicker';
 import { ApiPost } from '../../types/feed';
+import { appendImageToFormData, getMultipartHeaders } from '../../utils/upload';
 
 const EditPost = () => {
   const router = useRouter();
@@ -65,15 +66,11 @@ const EditPost = () => {
       formData.append('removePhoto', removePhoto ? 'true' : 'false');
 
       if (photoUri) {
-        formData.append('photo', {
-          uri: photoUri,
-          name: 'post.jpg',
-          type: 'image/jpeg',
-        } as any);
+        await appendImageToFormData(formData, 'photo', photoUri, 'post.jpg');
       }
 
       await axiosSecure.patch(`/posts/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: getMultipartHeaders(),
       });
 
       Alert.alert('Updated', 'Post updated successfully.', [

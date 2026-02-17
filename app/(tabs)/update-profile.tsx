@@ -5,6 +5,7 @@ import useAxiosCommon from '../../Hooks/useAxiosCommon';
 import { useUserContext } from '../../providers/UserContext';
 import { auth } from '../../firebase/firebase.config';
 import ProfileForm, { ProfileFormData } from '../../components/ProfileForm';
+import { appendImageToFormData, getMultipartHeaders } from '../../utils/upload';
 
 const UpdateProfilePage = () => {
   const router = useRouter();
@@ -88,11 +89,7 @@ const UpdateProfilePage = () => {
 
       const photoChanged = photoUri && photoUri !== initialPhoto;
       if (photoChanged) {
-        formData.append('photo', {
-          uri: photoUri,
-          name: 'profile.jpg',
-          type: 'image/jpeg',
-        } as any);
+        await appendImageToFormData(formData, 'photo', photoUri, 'profile.jpg');
         hasChanges = true;
       }
 
@@ -105,7 +102,7 @@ const UpdateProfilePage = () => {
 
       const response = await axiosCommon.patch('/user/profile', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          ...getMultipartHeaders(),
           Authorization: `Bearer ${idToken}`,
         },
       });
