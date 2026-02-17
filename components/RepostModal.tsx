@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Modal,
-  KeyboardAvoidingView,
   Platform,
   View,
   Text,
@@ -41,21 +40,28 @@ const RepostModal = ({
   submitLabel = 'Post Repost',
   previewPost = null,
 }: RepostModalProps) => {
-  return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <ScrollView>
-        <KeyboardAvoidingView
-          className="mb-12 flex-1 bg-white px-4 pt-24"
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-semibold">{title}</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={22} color="#64748b" />
-            </TouchableOpacity>
-          </View>
+  const content = (
+    <View
+      style={
+        Platform.OS === 'web'
+          ? { width: '100%', maxWidth: 430, alignSelf: 'center', flex: 1, backgroundColor: 'white' }
+          : { flex: 1, backgroundColor: 'white' }
+      }>
+      <View className="flex-1 px-4 pt-24">
+        <View className="flex-row items-center justify-between">
+          <Text className="text-lg font-semibold">{title}</Text>
+          <TouchableOpacity onPress={onClose}>
+            <Ionicons name="close" size={22} color="#64748b" />
+          </TouchableOpacity>
+        </View>
 
+        <ScrollView
+          className="mt-4"
+          contentContainerStyle={{ paddingBottom: 16 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           <TextInput
-            className="mt-4 min-h-[120px] rounded-xl border border-slate-300 px-3 py-2"
+            className="min-h-[120px] rounded-xl border border-slate-300 px-3 py-2"
             placeholder={placeholder}
             value={thought}
             onChangeText={onChangeThought}
@@ -68,19 +74,35 @@ const RepostModal = ({
           </Text>
 
           <RepostPreview post={previewPost || undefined} />
+        </ScrollView>
+      </View>
 
-          <TouchableOpacity
-            onPress={onSubmit}
-            disabled={loading}
-            className={`mt-4 rounded-xl py-3 ${loading ? 'bg-slate-300' : 'bg-blue-600'}`}>
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-center font-semibold text-white">{submitLabel}</Text>
-            )}
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </ScrollView>
+      <View className="border-t border-slate-200 bg-white px-4 pt-5 pb-10">
+        <TouchableOpacity
+          onPress={onSubmit}
+          disabled={loading}
+          className={`rounded-xl py-5 ${loading ? 'bg-slate-300' : 'bg-blue-600'}`}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-center font-semibold text-white">{submitLabel}</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  return (
+    <Modal
+      visible={visible}
+      animationType={Platform.OS === 'web' ? 'fade' : 'slide'}
+      transparent={Platform.OS === 'web'}
+      onRequestClose={onClose}>
+      {Platform.OS === 'web' ? (
+        <View style={{ flex: 1, backgroundColor: '#e5e7eb' }}>{content}</View>
+      ) : (
+        content
+      )}
     </Modal>
   );
 };
