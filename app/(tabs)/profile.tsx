@@ -262,7 +262,7 @@ const ProfilePage = () => {
           {userData?.photo ? (
             <Image
               source={{ uri: userData.photo }}
-              style={{ width: '100%', height: 128, borderRadius: 12 }}
+              style={{ width: '100%', height: 200, borderRadius: 12 }}
               resizeMode="cover"
             />
           ) : (
