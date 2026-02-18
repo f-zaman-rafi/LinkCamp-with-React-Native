@@ -1,3 +1,4 @@
+import '../global.css';
 import React from 'react';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import AuthProvider from '../providers/AuthProviders';
