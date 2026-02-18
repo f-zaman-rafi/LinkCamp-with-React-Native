@@ -1,7 +1,7 @@
 import '../../global.css';
 import React, { useMemo, useCallback, useRef } from 'react';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { View, Alert, FlatList } from 'react-native';
+import { useRouter } from 'expo-router';
+import { View, Alert, FlatList, ActivityIndicator } from 'react-native';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import useFeedData from '../../Hooks/useFeedData';
@@ -28,6 +28,8 @@ const FeedPage = () => {
     posts,
     loading,
     refreshing,
+    loadingMore,
+    hasMore,
     refresh,
     voteCounts,
     userVotes,
@@ -36,16 +38,8 @@ const FeedPage = () => {
     handleVote,
     updateCommentCount,
     updateRepostCount,
-    reload,
+    loadMore,
   } = useFeedData('/posts');
-
-  // Refresh feed when screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      reload(); // silent update when coming back
-    }, [reload])
-  );
 
   // Comments management
   const {
@@ -91,7 +85,6 @@ const FeedPage = () => {
     postById,
     onSuccess: (postId) => {
       updateRepostCount(postId, 1);
-      refresh();
     },
   });
 
@@ -203,6 +196,17 @@ const FeedPage = () => {
         renderItem={renderPost}
         refreshing={refreshing}
         onRefresh={refresh}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        listFooterComponent={
+          loadingMore ? (
+            <View className="py-4">
+              <ActivityIndicator color="#2563eb" />
+            </View>
+          ) : !hasMore ? (
+            <View className="py-4" />
+          ) : null
+        }
         listEmptyComponent={<EmptyState />}
       />
 

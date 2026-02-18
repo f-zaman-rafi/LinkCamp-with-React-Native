@@ -1,7 +1,7 @@
 import '../../global.css';
 import React, { useMemo, useCallback, useRef } from 'react';
-import { View, Alert, FlatList } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { View, Alert, FlatList, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import useFeedData from '../../Hooks/useFeedData';
@@ -27,6 +27,8 @@ const TeacherFeed = () => {
     posts,
     loading,
     refreshing,
+    loadingMore,
+    hasMore,
     refresh,
     voteCounts,
     userVotes,
@@ -35,15 +37,8 @@ const TeacherFeed = () => {
     handleVote,
     updateCommentCount,
     updateRepostCount,
-    reload,
-  } = useFeedData('/posts');
-
-  useFocusEffect(
-    useCallback(() => {
-      listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      reload(); // silent update when coming back
-    }, [reload])
-  );
+    loadMore,
+  } = useFeedData('/teacher/announcements');
 
   const {
     commentsOpen,
@@ -85,11 +80,8 @@ const TeacherFeed = () => {
     postById,
     onSuccess: (postId) => {
       updateRepostCount(postId, 1);
-      refresh();
     },
   });
-
-  const teacherPosts = useMemo(() => posts.filter((post) => post.postType === 'teacher'), [posts]);
 
   const deletePost = async (postId: string) => {
     try {
@@ -190,11 +182,22 @@ const TeacherFeed = () => {
     <View className="flex-1 bg-white px-4 pt-2">
       <FeedList
         listRef={listRef}
-        data={teacherPosts}
+        data={posts}
         keyExtractor={(item) => item._id}
         renderItem={renderPost}
         refreshing={refreshing}
         onRefresh={refresh}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        listFooterComponent={
+          loadingMore ? (
+            <View className="py-4">
+              <ActivityIndicator color="#2563eb" />
+            </View>
+          ) : !hasMore ? (
+            <View className="py-4" />
+          ) : null
+        }
         listEmptyComponent={
           <EmptyState
             title="No announcements yet"

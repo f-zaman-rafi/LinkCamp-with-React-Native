@@ -9,6 +9,9 @@ type FeedListProps<T> = {
   onRefresh: () => void;
   listEmptyComponent?: React.ReactElement;
   listRef?: React.RefObject<FlatList<T>>;
+  onEndReached?: () => void;
+  onEndReachedThreshold?: number;
+  listFooterComponent?: React.ReactElement | null;
 };
 
 const FeedList = <T,>({
@@ -19,6 +22,9 @@ const FeedList = <T,>({
   onRefresh,
   listEmptyComponent,
   listRef,
+  onEndReached,
+  onEndReachedThreshold = 0.5,
+  listFooterComponent = null,
 }: FeedListProps<T>) => {
   return (
     <FlatList
@@ -30,6 +36,9 @@ const FeedList = <T,>({
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListEmptyComponent={listEmptyComponent}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={onEndReachedThreshold}
+      ListFooterComponent={listFooterComponent}
       contentContainerStyle={{ flexGrow: 1 }}
       contentInsetAdjustmentBehavior="never"
     />

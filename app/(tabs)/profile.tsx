@@ -1,5 +1,5 @@
 import '../../global.css';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter } from 'expo-router';
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import { useUserContext } from '../../providers/UserContext';
@@ -36,10 +36,9 @@ const ProfilePage = () => {
   const { userData, setUserData } = useUserContext();
   const { confirmLogout, logoutLoading } = useAppLogout();
   const email = user?.email || '';
-  const listRef = useRef<FlatList<ApiPost>>(null);
 
   const [photoOpen, setPhotoOpen] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(!userData);
 
   const endpoint = email ? `/user/profile/${email}` : '/posts';
 
@@ -47,6 +46,8 @@ const ProfilePage = () => {
     posts,
     loading,
     refreshing,
+    loadingMore,
+    hasMore,
     refresh,
     voteCounts,
     userVotes,
@@ -55,15 +56,17 @@ const ProfilePage = () => {
     handleVote,
     updateCommentCount,
     updateRepostCount,
-    reload,
+    loadMore,
   } = useFeedData(endpoint);
 
-  const loadUser = useCallback(async () => {
+  const loadUser = useCallback(async (showSpinner = false) => {
     if (!email) {
       setProfileLoading(false);
       return;
     }
-    setProfileLoading(true);
+    if (showSpinner) {
+      setProfileLoading(true);
+    }
     try {
       const res = await axiosSecure.get(`/user/${email}`);
       const u = res.data || {};
@@ -85,13 +88,19 @@ const ProfilePage = () => {
     }
   }, [axiosSecure, email, setUserData]);
 
-  useFocusEffect(
-    useCallback(() => {
-      listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      reload();
-      loadUser();
-    }, [reload, loadUser])
-  );
+  useEffect(() => {
+    if (!email) {
+      setProfileLoading(false);
+      return;
+    }
+
+    if (userData?.name) {
+      setProfileLoading(false);
+      return;
+    }
+
+    loadUser(true);
+  }, [email, loadUser, userData?.name]);
 
   const mergedPosts = useMemo(() => {
     return posts.map((p) =>
@@ -148,7 +157,6 @@ const ProfilePage = () => {
     postById,
     onSuccess: (postId) => {
       updateRepostCount(postId, 1);
-      refresh();
     },
   });
 
@@ -243,9 +251,14 @@ const ProfilePage = () => {
     );
   };
 
-  if (loading || profileLoading) {
+  if ((loading && posts.length === 0) || profileLoading) {
     return <LoadingState />;
   }
+
+  const handleRefresh = () => {
+    refresh();
+    loadUser(false);
+  };
 
   const role = userData?.userType || '';
   const showStudent = role === 'student';
@@ -340,7 +353,6 @@ const ProfilePage = () => {
   return (
     <View className="flex-1 bg-white">
       <FlatList
-        ref={listRef}
         data={mergedPosts}
         keyExtractor={(item) => item._id}
         renderItem={renderPost}
@@ -351,7 +363,18 @@ const ProfilePage = () => {
           </View>
         }
         refreshing={refreshing}
-        onRefresh={refresh}
+        onRefresh={handleRefresh}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <View className="py-4">
+              <ActivityIndicator color="#2563eb" />
+            </View>
+          ) : !hasMore ? (
+            <View className="py-4" />
+          ) : null
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
       />
