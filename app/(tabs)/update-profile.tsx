@@ -144,7 +144,7 @@ const UpdateProfilePage = () => {
   }
 
   return (
-    <View className="flex-1 justify-center bg-white px-6">
+    <View className="flex-1 bg-white px-6 pb-6">
       <ProfileForm
         initialValues={initialValues}
         initialPhotoUri={initialPhoto}

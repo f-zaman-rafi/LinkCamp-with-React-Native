@@ -34,6 +34,7 @@
         "foregroundImage": "./assets/logo_linkcamp.png",
         "backgroundColor": "#ffffff"
       },
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.irafi.linkcamp"
     },
     "extra": {

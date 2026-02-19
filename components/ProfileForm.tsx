@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -40,6 +42,8 @@ type ProfileFormProps = {
   hideSubmit?: boolean;
 };
 
+type FieldKey = 'firstName' | 'lastName' | 'id';
+
 const ProfileForm = ({
   initialValues,
   initialPhotoUri = null,
@@ -54,6 +58,12 @@ const ProfileForm = ({
   hideSubmit = false,
 }: ProfileFormProps) => {
   const [photoUri, setPhotoUri] = useState<string | null>(initialPhotoUri);
+  const scrollRef = useRef<ScrollView>(null);
+  const [fieldY, setFieldY] = useState<Record<FieldKey, number>>({
+    firstName: 0,
+    lastName: 0,
+    id: 0,
+  });
 
   const {
     control,
@@ -151,11 +161,25 @@ const ProfileForm = ({
     }
   };
 
+  const focusField = (key: FieldKey) => {
+    const targetY = Math.max(0, (fieldY[key] || 0) - 120);
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: targetY, animated: true });
+    }, 80);
+  };
+
   return (
-    <ScrollView
-      className=""
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}>
+      <ScrollView
+        ref={scrollRef}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 96 }}
+        showsVerticalScrollIndicator={false}>
       {photoUri ? (
         <Image
           source={{ uri: photoUri }}
@@ -181,7 +205,12 @@ const ProfileForm = ({
         {errors.photo && <Text className="mt-1 text-xs text-red-500">{errors.photo.message}</Text>}
       </View>
 
-      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
+      <View
+        className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}
+        onLayout={(event) => {
+          const y = event.nativeEvent.layout.y;
+          setFieldY((prev) => ({ ...prev, firstName: y }));
+        }}>
         <Text className="mb-2 font-semibold">First Name</Text>
         <Controller
           control={control}
@@ -195,13 +224,20 @@ const ProfileForm = ({
               }`}
               value={value}
               onChangeText={onChange}
+              onFocus={() => focusField('firstName')}
               placeholder="First name"
+              returnKeyType="next"
             />
           )}
         />
       </View>
 
-      <View className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}>
+      <View
+        className={`mb-4 ${readOnly ? 'opacity-60' : ''}`}
+        onLayout={(event) => {
+          const y = event.nativeEvent.layout.y;
+          setFieldY((prev) => ({ ...prev, lastName: y }));
+        }}>
         <Text className="mb-2 font-semibold">Last Name</Text>
         <Controller
           control={control}
@@ -215,7 +251,9 @@ const ProfileForm = ({
               }`}
               value={value}
               onChangeText={onChange}
+              onFocus={() => focusField('lastName')}
               placeholder="Last name"
+              returnKeyType="next"
             />
           )}
         />
@@ -289,7 +327,12 @@ const ProfileForm = ({
       </View>
 
       {(selectedUserType === 'student' || selectedUserType === 'teacher') && (
-        <View className={readOnly ? 'opacity-60' : ''}>
+        <View
+          className={readOnly ? 'opacity-60' : ''}
+          onLayout={(event) => {
+            const y = event.nativeEvent.layout.y;
+            setFieldY((prev) => ({ ...prev, id: y }));
+          }}>
           <Text className="mb-2 font-semibold">
             {selectedUserType === 'student' ? 'Student ID' : 'Teacher ID'}
           </Text>
@@ -308,8 +351,10 @@ const ProfileForm = ({
                 }`}
                 value={value}
                 onChangeText={onChange}
+                onFocus={() => focusField('id')}
                 placeholder="ID Number"
                 keyboardType="numeric"
+                returnKeyType="next"
               />
             )}
           />
@@ -417,7 +462,8 @@ const ProfileForm = ({
           </TouchableOpacity>
         )
       ) : null}
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
