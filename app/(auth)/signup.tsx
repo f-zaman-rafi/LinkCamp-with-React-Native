@@ -84,7 +84,7 @@ const SignUpPage = () => {
             }}
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`h-14 rounded-xl border px-4 ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
+                className={`h-14 rounded-xl border px-4 text-slate-900 ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
                 value={value}
                 onChangeText={onChange}
                 placeholder="student@university.edu"
@@ -115,7 +115,7 @@ const SignUpPage = () => {
               }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className={`h-14 rounded-xl border px-4 pr-12 ${errors.password ? 'border-red-500' : 'border-slate-300'}`}
+                  className={`h-14 rounded-xl border px-4 pr-12 text-slate-900 ${errors.password ? 'border-red-500' : 'border-slate-300'}`}
                   value={value}
                   onChangeText={onChange}
                   placeholder="••••••••"

@@ -219,7 +219,7 @@ const ProfileForm = ({
           render={({ field: { onChange, value } }) => (
             <TextInput
               editable={!readOnly}
-              className={`h-14 rounded-xl border px-4 ${
+              className={`h-14 rounded-xl border pl-6 pr-4 text-slate-900 ${
                 errors.firstName ? 'border-red-500' : 'border-slate-300'
               }`}
               value={value}
@@ -247,7 +247,7 @@ const ProfileForm = ({
           render={({ field: { onChange, value } }) => (
             <TextInput
               editable={!readOnly}
-              className={`h-14 rounded-xl border px-4 ${
+              className={`h-14 rounded-xl border pl-6 pr-4 text-slate-900 ${
                 errors.lastName ? 'border-red-500' : 'border-slate-300'
               }`}
               value={value}
@@ -348,7 +348,7 @@ const ProfileForm = ({
             render={({ field: { onChange, value } }) => (
               <TextInput
                 editable={!readOnly}
-                className={`mb-4 h-14 rounded-xl border px-4 ${
+                className={`mb-4 h-14 rounded-xl border pl-6 pr-4 text-slate-900 ${
                   errors.Id ? 'border-red-500' : 'border-slate-300'
                 }`}
                 value={value}
