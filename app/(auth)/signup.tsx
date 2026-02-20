@@ -88,6 +88,7 @@ const SignUpPage = () => {
                 value={value}
                 onChangeText={onChange}
                 placeholder="student@university.edu"
+                placeholderTextColor="#94a3b8"
                 autoCapitalize="none"
                 keyboardType="email-address"
               />
@@ -118,6 +119,7 @@ const SignUpPage = () => {
                   value={value}
                   onChangeText={onChange}
                   placeholder="••••••••"
+                  placeholderTextColor="#94a3b8"
                   secureTextEntry={!showPassword}
                 />
               )}

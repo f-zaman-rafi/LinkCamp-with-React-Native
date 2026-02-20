@@ -226,6 +226,7 @@ const ProfileForm = ({
               onChangeText={onChange}
               onFocus={() => focusField('firstName')}
               placeholder="First name"
+              placeholderTextColor="#94a3b8"
               returnKeyType="next"
             />
           )}
@@ -253,6 +254,7 @@ const ProfileForm = ({
               onChangeText={onChange}
               onFocus={() => focusField('lastName')}
               placeholder="Last name"
+              placeholderTextColor="#94a3b8"
               returnKeyType="next"
             />
           )}
@@ -353,6 +355,7 @@ const ProfileForm = ({
                 onChangeText={onChange}
                 onFocus={() => focusField('id')}
                 placeholder="ID Number"
+                placeholderTextColor="#94a3b8"
                 keyboardType="numeric"
                 returnKeyType="next"
               />

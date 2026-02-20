@@ -40,6 +40,7 @@ const ForgotPassword = () => {
       <TextInput
         className="mt-6 h-14 rounded-xl border border-slate-300 px-4"
         placeholder="you@example.com"
+        placeholderTextColor="#94a3b8"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}

@@ -165,6 +165,7 @@ const LoginScreen = () => {
               <TextInput
                 className={`w-full rounded-xl border bg-slate-50 px-4 py-4 ${errors.email ? 'border-red-500' : 'border-slate-200'}`}
                 placeholder="student@university.edu"
+                placeholderTextColor="#94a3b8"
                 value={value}
                 onChangeText={onChange}
                 autoCapitalize="none"
@@ -195,6 +196,7 @@ const LoginScreen = () => {
                 <TextInput
                   className={`w-full rounded-xl border bg-slate-50 px-4 py-4 pr-12 ${errors.password ? 'border-red-500' : 'border-slate-200'}`}
                   placeholder="••••••••"
+                  placeholderTextColor="#94a3b8"
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry={!showPassword}

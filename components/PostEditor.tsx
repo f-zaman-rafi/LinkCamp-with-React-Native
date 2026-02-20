@@ -93,6 +93,7 @@ const PostEditor = ({
       <TextInput
         className="mt-4 min-h-30 rounded-xl border border-slate-300 px-4 py-3 text-slate-800"
         placeholder={placeholder}
+        placeholderTextColor="#94a3b8"
         multiline
         scrollEnabled
         textAlignVertical="top"

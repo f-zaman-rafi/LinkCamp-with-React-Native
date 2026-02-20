@@ -63,6 +63,7 @@ const RepostModal = ({
           <TextInput
             className="min-h-30 rounded-xl border border-slate-300 px-3 py-2"
             placeholder={placeholder}
+            placeholderTextColor="#94a3b8"
             value={thought}
             onChangeText={onChangeThought}
             multiline

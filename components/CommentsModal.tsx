@@ -158,6 +158,7 @@ const CommentsModal = ({
           <TextInput
             className="flex-1 rounded-xl border border-slate-300 px-3 py-2"
             placeholder={isEditing ? 'Edit your comment...' : 'Write a comment...'}
+            placeholderTextColor="#94a3b8"
             value={commentText}
             onChangeText={setCommentText}
             maxLength={COMMENT_LIMIT}
