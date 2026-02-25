@@ -120,8 +120,3 @@ utils/                # Utilities (uploads, helpers, etc.)
 - Realtime layer connects to backend Socket.IO and subscribes by feed/post rooms
 - Error routing handles pending/blocked account states from backend response codes
 
-## What This Demonstrates (Recruiter View)
-- Cross-platform product implementation with shared codebase
-- Realtime client architecture with robust state updates
-- Role-based UX and guarded navigation
-- Practical integration across Firebase, REST APIs, and WebSockets
