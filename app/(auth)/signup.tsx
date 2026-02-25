@@ -159,6 +159,12 @@ const SignUpPage = () => {
             </Text>
           </Text>
         </View>
+
+        <View className="mt-6">
+          <Text className="text-center text-xs tracking-wide text-slate-400">
+            Developed by R A F I
+          </Text>
+        </View>
       </View>
     </View>
   );
