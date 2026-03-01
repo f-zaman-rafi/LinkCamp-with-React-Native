@@ -8,6 +8,7 @@ import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
 import useRepostPreview from '../../Hooks/useRepostPreview';
+import useSlowLoading from '../../Hooks/useSlowLoading';
 import FeedList from '../../components/FeedList';
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
@@ -31,6 +32,7 @@ const FeedPage = () => {
     loadingMore,
     hasMore,
     refresh,
+    reload,
     voteCounts,
     userVotes,
     commentCounts,
@@ -40,6 +42,7 @@ const FeedPage = () => {
     updateRepostCount,
     loadMore,
   } = useFeedData('/posts');
+  const showWakeNotice = useSlowLoading(loading, 10000);
 
   // Comments management
   const {
@@ -184,7 +187,7 @@ const FeedPage = () => {
   };
 
   if (loading) {
-    return <LoadingState />;
+    return <LoadingState showWakeNotice={showWakeNotice} onReload={reload} />;
   }
 
   return (

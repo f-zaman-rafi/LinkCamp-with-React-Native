@@ -20,6 +20,7 @@ import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
 import useRepostPreview from '../../Hooks/useRepostPreview';
+import useSlowLoading from '../../Hooks/useSlowLoading';
 
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
@@ -49,6 +50,7 @@ const ProfilePage = () => {
     loadingMore,
     hasMore,
     refresh,
+    reload,
     voteCounts,
     userVotes,
     commentCounts,
@@ -58,6 +60,12 @@ const ProfilePage = () => {
     updateRepostCount,
     loadMore,
   } = useFeedData(endpoint);
+  const showWakeNotice = useSlowLoading((loading && posts.length === 0) || profileLoading, 10000);
+
+  const handleRefresh = () => {
+    reload();
+    loadUser(false);
+  };
 
   const loadUser = useCallback(async (showSpinner = false) => {
     if (!email) {
@@ -252,13 +260,8 @@ const ProfilePage = () => {
   };
 
   if ((loading && posts.length === 0) || profileLoading) {
-    return <LoadingState />;
+    return <LoadingState showWakeNotice={showWakeNotice} onReload={handleRefresh} />;
   }
-
-  const handleRefresh = () => {
-    refresh();
-    loadUser(false);
-  };
 
   const role = userData?.userType || '';
   const showStudent = role === 'student';
