@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, Text, TouchableOpacity, Platform } from 'react-native';
 
 type LoadingStateProps = {
   showWakeNotice?: boolean;
@@ -21,7 +21,13 @@ const LoadingState = ({ showWakeNotice = false, onReload }: LoadingStateProps) =
           </Text>
           {onReload ? (
             <TouchableOpacity
-              onPress={onReload}
+              onPress={() => {
+                if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                  window.location.reload();
+                  return;
+                }
+                onReload();
+              }}
               className="mt-3 self-center rounded-lg border border-slate-300 px-4 py-2">
               <Text className="text-xs font-semibold text-slate-700">Reload</Text>
             </TouchableOpacity>

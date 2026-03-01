@@ -8,7 +8,6 @@ import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
 import useRepostPreview from '../../Hooks/useRepostPreview';
-import useSlowLoading from '../../Hooks/useSlowLoading';
 import FeedList from '../../components/FeedList';
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
@@ -31,7 +30,6 @@ const TeacherFeed = () => {
     loadingMore,
     hasMore,
     refresh,
-    reload,
     voteCounts,
     userVotes,
     commentCounts,
@@ -41,7 +39,6 @@ const TeacherFeed = () => {
     updateRepostCount,
     loadMore,
   } = useFeedData('/teacher/announcements');
-  const showWakeNotice = useSlowLoading(loading, 10000);
 
   const {
     commentsOpen,
@@ -178,7 +175,7 @@ const TeacherFeed = () => {
   };
 
   if (loading) {
-    return <LoadingState showWakeNotice={showWakeNotice} onReload={reload} />;
+    return <LoadingState />;
   }
 
   return (

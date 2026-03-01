@@ -8,7 +8,6 @@ import useFeedData from '../../Hooks/useFeedData';
 import useComments from '../../Hooks/useComments';
 import useReports from '../../Hooks/useReports';
 import useRepostPreview from '../../Hooks/useRepostPreview';
-import useSlowLoading from '../../Hooks/useSlowLoading';
 import FeedList from '../../components/FeedList';
 import PostCard from '../../components/PostCard';
 import CommentsModal from '../../components/CommentsModal';
@@ -31,7 +30,6 @@ const AdministationFeed = () => {
     loadingMore,
     hasMore,
     refresh,
-    reload,
     voteCounts,
     userVotes,
     commentCounts,
@@ -41,7 +39,6 @@ const AdministationFeed = () => {
     updateRepostCount,
     loadMore,
   } = useFeedData('/admin/notices');
-  const showWakeNotice = useSlowLoading(loading, 10000);
   const {
     commentsOpen,
     commentsLoading,
@@ -177,7 +174,7 @@ const AdministationFeed = () => {
   };
 
   if (loading) {
-    return <LoadingState showWakeNotice={showWakeNotice} onReload={reload} />;
+    return <LoadingState />;
   }
 
   return (
