@@ -16,8 +16,9 @@ const LoadingState = ({ showWakeNotice = false, onReload }: LoadingStateProps) =
             Server is waking up
           </Text>
           <Text className="mt-1 text-center text-xs leading-5 text-slate-500">
-            This app is running on free hosting. The first request can take a little longer after
-            inactivity.
+            This app is hosted on a free tier. After a period of inactivity, the first request may
+            take up to 30 seconds while the server wakes up. Subsequent requests will respond
+            normally.
           </Text>
           {onReload ? (
             <TouchableOpacity
