@@ -17,5 +17,5 @@ export const formatRelativeTime = (input?: string | number | Date) => {
   if (diff < month) return `${Math.floor(diff / day)}d`;
 
   // older than 30 days → Month Year
-  return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 };

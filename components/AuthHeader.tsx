@@ -8,7 +8,7 @@ type AuthHeaderProps = {
 };
 
 const AuthHeader = ({
-  subtitle = 'University Campus Platform',
+  subtitle = 'Lincoln University Campus Platform',
   containerClassName = 'mt-20 mb-4',
 }: AuthHeaderProps) => {
   return (
